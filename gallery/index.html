@@ -105,19 +105,15 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* 2. Hero Section 1:1 Penuh dengan Logo di Tengah */
+        /* 2. Hero Section 1:1 dengan Slideshow Utuh & Logo Kecil di Kanan Atas */
         .hero-section {
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px 24px 96px;
             overflow: hidden;
+            background-color: #060b19;
         }
 
-        /* Wadah Background Slideshow 1:1 Tanpa Efek Zoom */
         .hero-bg-slideshow {
             position: absolute;
             inset: 0;
@@ -125,7 +121,6 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
-            overflow: hidden;
         }
 
         .hero-slide {
@@ -136,8 +131,8 @@
             object-fit: cover;
             object-position: center;
             opacity: 0;
-            filter: brightness(0.62) saturate(1.1);
-            transition: opacity 1.2s ease-in-out;
+            filter: brightness(0.92) saturate(1.06);
+            transition: opacity 1.1s ease-in-out;
             will-change: opacity;
         }
 
@@ -145,37 +140,70 @@
             opacity: 1;
         }
 
-        /* Gradient Hitam & Dark Blue agar menyatu mulus ke #060b19 */
+        /* Gradient Atas Tipis (untuk keterbacaan logo kanan atas) & Bawah Menyatu ke #060b19 */
         .hero-gradient-mask {
             position: absolute;
             inset: 0;
-            background: 
-                radial-gradient(circle at 50% 42%, rgba(6, 11, 25, 0.18) 0%, rgba(6, 11, 25, 0.55) 75%),
-                linear-gradient(180deg, 
-                    rgba(6, 11, 25, 0.25) 0%, 
-                    rgba(6, 11, 25, 0.30) 48%, 
-                    rgba(6, 11, 25, 0.88) 82%, 
-                    #060b19 100%
-                );
-            z-index: 1;
+            background: linear-gradient(180deg, 
+                rgba(6, 11, 25, 0.42) 0%, 
+                rgba(6, 11, 25, 0.0) 24%, 
+                rgba(6, 11, 25, 0.0) 58%, 
+                rgba(6, 11, 25, 0.85) 84%, 
+                #060b19 100%
+            );
+            z-index: 2;
             pointer-events: none;
         }
 
-        /* Logo Tengah Hero (Diam / Tanpa Animasi) */
-        .hero-center-logo {
-            position: relative;
-            z-index: 10;
-            width: 72%;
-            max-width: 270px;
-            max-height: 140px;
+        /* Logo PNG Putih Kecil di Pojok Kanan Atas */
+        .hero-top-right-logo {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            z-index: 20;
+            height: 32px;
+            width: auto;
             object-fit: contain;
-            filter: drop-shadow(0 10px 26px rgba(6, 11, 25, 0.85)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.45));
+            filter: drop-shadow(0 2px 10px rgba(4, 8, 18, 0.85));
+            pointer-events: none;
+        }
+
+        /* Indikator Dots Slideshow di Pojok Kiri Atas */
+        .slide-dots {
+            position: absolute;
+            top: 18px;
+            left: 16px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 8px;
+            border-radius: 9999px;
+            background: rgba(6, 11, 25, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+        }
+
+        .slide-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.35);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .slide-dot.active {
+            width: 14px;
+            background: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
         }
 
         /* 3. Kartu Link Gaming Modern Dark Blue */
         .gaming-card {
             position: relative;
-            background: rgba(13, 23, 46, 0.88);
+            background: rgba(13, 23, 46, 0.90);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(56, 189, 248, 0.16);
@@ -199,7 +227,7 @@
 
         .gaming-card:hover {
             transform: translateY(-2px);
-            background: rgba(18, 32, 64, 0.95);
+            background: rgba(18, 32, 64, 0.96);
             border-color: rgba(56, 189, 248, 0.42);
             box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6), 0 0 16px rgba(56, 189, 248, 0.14);
         }
@@ -275,12 +303,12 @@
 
         /* 4. Kartu Embed YouTube Live / Stream Terakhir */
         .yt-stream-card {
-            background: linear-gradient(180deg, rgba(13, 25, 52, 0.94) 0%, rgba(8, 15, 34, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(13, 25, 52, 0.95) 0%, rgba(8, 15, 34, 0.98) 100%);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(56, 189, 248, 0.32);
             border-radius: 20px;
-            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.75), 0 0 20px rgba(37, 99, 235, 0.14);
+            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.78), 0 0 20px rgba(37, 99, 235, 0.14);
             overflow: hidden;
             opacity: 0;
             transform: translateY(14px);
@@ -333,8 +361,19 @@
             </div>
         </div>
 
-        <!-- 2. HERO SECTION 1:1 DENGAN LOGO DI TENGAH -->
+        <!-- 2. HERO SECTION 1:1 DENGAN LOGO PNG PUTIH KECIL DI KANAN ATAS -->
         <header class="hero-section">
+            <!-- Indikator Dots Slideshow di Kiri Atas -->
+            <div id="slideDots" class="slide-dots" aria-hidden="true"></div>
+
+            <!-- Logo PNG Putih Kecil di Kanan Atas -->
+            <img src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0" 
+                 alt="Logo Oink Gaming" 
+                 loading="eager" 
+                 decoding="async"
+                 class="hero-top-right-logo"
+                 onerror="this.style.display='none'">
+
             <!-- Background Slideshow 1:1 (Tanpa Zoom) -->
             <div id="heroSlideshow" class="hero-bg-slideshow">
                 <img src="https://lh3.googleusercontent.com/d/1vwGDH9S4f2voV7hsvjsZaHx80Uze_9OG=s0" alt="Slide 1" class="hero-slide active" loading="eager">
@@ -346,20 +385,13 @@
                 <img src="https://lh3.googleusercontent.com/d/1j52qCENE5LF-Qa7mb-WoTwJdYmGm4UvC=s0" alt="Slide 7" class="hero-slide" loading="lazy">
                 <img src="https://lh3.googleusercontent.com/d/1gmQCc-7YybEdH2gRRCJsDzN2w6tTfsZ0=s0" alt="Slide 8" class="hero-slide" loading="lazy">
             </div>
-            <!-- Overlay Gradient Hitam / Dark Blue Halus -->
-            <div class="hero-gradient-mask"></div>
 
-            <!-- Logo Kustom di Tengah Hero (Diam) -->
-            <img src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0" 
-                 alt="Logo Oink Gaming" 
-                 loading="eager" 
-                 decoding="async"
-                 class="hero-center-logo"
-                 onerror="this.style.display='none'">
+            <!-- Overlay Gradient Hitam / Dark Blue Halus di Bawah agar Menyatu dengan Kartu -->
+            <div class="hero-gradient-mask"></div>
         </header>
 
-        <!-- 3. DAFTAR TOMBOL LINK GAMING -->
-        <section class="relative z-20 -mt-24 px-4 pb-8 flex-1 flex flex-col gap-3" aria-label="Daftar Tautan Utama">
+        <!-- 3. DAFTAR TOMBOL LINK GAMING (Dinaikkan Menyatu di Atas Gradasi Bawah Hero) -->
+        <section class="relative z-20 -mt-20 px-4 pb-8 flex-1 flex flex-col gap-3" aria-label="Daftar Tautan Utama">
 
             <!-- EMBED YOUTUBE LIVE / LATEST STREAM -->
             <div style="animation-delay: 0.02s;" class="yt-stream-card mb-0.5">
@@ -593,19 +625,47 @@
         </div>
     </div>
 
-    <!-- Vanilla JS Ringan (Slideshow, Ripple & Copy ID) -->
+    <!-- Vanilla JS Ringan (Slideshow + Dots, Ripple & Copy ID) -->
     <script>
-        // Slideshow Background Hero Otomatis (Tanpa Efek Zoom)
+        // Slideshow Hero Otomatis dengan Indikator Dots
         (function initHeroSlideshow() {
             const slides = document.querySelectorAll('#heroSlideshow .hero-slide');
+            const dotsContainer = document.getElementById('slideDots');
             if (slides.length <= 1) return;
 
             let currentIndex = 0;
-            setInterval(() => {
+            let slideTimer;
+
+            slides.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.ariaLabel = `Slide ${idx + 1}`;
+                dot.className = idx === 0 ? 'slide-dot active' : 'slide-dot';
+                dot.addEventListener('click', () => {
+                    goToSlide(idx);
+                    resetTimer();
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            const dots = dotsContainer.querySelectorAll('.slide-dot');
+
+            function goToSlide(index) {
                 slides[currentIndex].classList.remove('active');
-                currentIndex = (currentIndex + 1) % slides.length;
+                dots[currentIndex].classList.remove('active');
+                currentIndex = index;
                 slides[currentIndex].classList.add('active');
-            }, 4000);
+                dots[currentIndex].classList.add('active');
+            }
+
+            function resetTimer() {
+                clearInterval(slideTimer);
+                slideTimer = setInterval(() => {
+                    goToSlide((currentIndex + 1) % slides.length);
+                }, 4000);
+            }
+
+            resetTimer();
         })();
 
         // Efek Ripple Sentuhan pada Kartu
