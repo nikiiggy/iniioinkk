@@ -1,831 +1,1266 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Oink Gaming (@iniioinkk) | Bio Hub</title>
-    <!-- Tailwind CSS CDN untuk tata letak presisi & cepat -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans & Rajdhani untuk nuansa gaming modern yang bersih -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        gaming: ['Rajdhani', 'sans-serif'],
-                    },
-                    colors: {
-                        navy: {
-                            950: '#040812',
-                            900: '#060b19',
-                            800: '#0b1429',
-                            700: '#111e3d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oink (@iniioinkk) — Dark Navy Bento Dashboard</title>
 
-    <style>
-        /* Reset Dasar & Optimalisasi GPU */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <!-- Google Fonts: Plus Jakarta Sans (clean UI) & Fredoka (playful display title) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-        body {
-            background-color: #040812;
-            color: #f8fafc;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            overflow-x: hidden;
-        }
+  <!-- FontAwesome for crisp UI & social icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-        /* Ambient Glow Latar Belakang Desktop */
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 15%, rgba(37, 99, 235, 0.14) 0%, transparent 45%),
-                radial-gradient(circle at 80% 85%, rgba(14, 165, 233, 0.12) 0%, transparent 45%);
-            pointer-events: none;
-            z-index: 0;
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            display: ['"Fredoka"', 'sans-serif'],
+          },
+          colors: {
+            midnight: '#050a18',
+            navy: {
+              950: '#070d1f',
+              900: '#0a1128',
+              800: '#0f1b3d',
+              700: '#162654',
+              600: '#1e3570',
+              500: '#2563eb',
+              400: '#3b82f6',
+              300: '#60a5fa',
+            },
+            ice: '#f8fafc',
+          },
+          boxShadow: {
+            'tablet': '0 30px 70px -15px rgba(2, 6, 23, 0.85), 0 0 0 1px rgba(96, 165, 250, 0.18)',
+            'float': '0 14px 32px -6px rgba(5, 10, 24, 0.55)',
+            'float-light': '0 14px 30px -6px rgba(15, 27, 61, 0.22)',
+            'glow-blue': '0 0 28px rgba(59, 130, 246, 0.35)',
+          }
         }
+      }
+    };
+  </script>
 
-        /* Kontainer Mobile Utama (Max-width 480px) */
-        .app-shell {
-            width: 100%;
-            max-width: 480px;
-            min-height: 100vh;
-            background-color: #060b19;
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(56, 189, 248, 0.12);
-        }
+  <style>
+    /* Base page ambient midnight navy background */
+    body {
+      background-color: #050a18;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.18) 0%, transparent 48%),
+        radial-gradient(circle at 50% 50%, rgba(15, 27, 61, 0.7) 0%, #050a18 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
 
-        /* 1. Sticky Top Running Text / Marquee */
-        .marquee-bar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: rgba(6, 11, 25, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.18);
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 9px 0;
-        }
+    /* Stylized OINK! display text with crisp outline & shadow */
+    .oink-title {
+      font-family: 'Fredoka', sans-serif;
+      letter-spacing: 0.03em;
+      color: #0f1b3d;
+      text-shadow: 0 3px 0 #93c5fd, 0 6px 14px rgba(37, 99, 235, 0.22);
+    }
 
-        .marquee-track {
-            display: inline-flex;
-            align-items: center;
-            animation: marqueeLoop 20s linear infinite;
-            will-change: transform;
-        }
+    /* Animated audio waveform bars */
+    .wave-bar {
+      transition: height 0.25s ease, background-color 0.25s ease;
+      transform-origin: center;
+    }
 
-        .marquee-bar:hover .marquee-track {
-            animation-play-state: paused;
-        }
+    .waveform-playing .wave-bar {
+      animation: waveBounce 0.9s ease-in-out infinite alternate;
+    }
 
-        @keyframes marqueeLoop {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+    @keyframes waveBounce {
+      0% {
+        transform: scaleY(0.32);
+        opacity: 0.65;
+      }
+      50% {
+        transform: scaleY(1.15);
+        opacity: 1;
+      }
+      100% {
+        transform: scaleY(0.5);
+        opacity: 0.85;
+      }
+    }
 
-        /* 2. Hero Section 1:1 dengan Slideshow Utuh & Logo Kecil di Kanan Atas */
-        .hero-section {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            background-color: #060b19;
-        }
+    /* Subtle floating animation for pop-out avatar */
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
 
-        .hero-bg-slideshow {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
+    .avatar-popout {
+      filter: drop-shadow(0 18px 28px rgba(3, 8, 22, 0.75)) drop-shadow(0 0 18px rgba(59, 130, 246, 0.22));
+      animation: gentleFloat 5s ease-in-out infinite;
+    }
 
-        .hero-slide {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            opacity: 0;
-            filter: brightness(0.92) saturate(1.06);
-            transition: opacity 1.1s ease-in-out;
-            will-change: opacity;
-        }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a1128;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e3570;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b82f6;
+    }
 
-        .hero-slide.active {
-            opacity: 1;
-        }
-
-        /* Gradient Atas Tipis (untuk keterbacaan logo kanan atas) & Bawah Menyatu ke #060b19 */
-        .hero-gradient-mask {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, 
-                rgba(6, 11, 25, 0.42) 0%, 
-                rgba(6, 11, 25, 0.0) 24%, 
-                rgba(6, 11, 25, 0.0) 58%, 
-                rgba(6, 11, 25, 0.85) 84%, 
-                #060b19 100%
-            );
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* Logo PNG Putih Kecil di Pojok Kanan Atas */
-        .hero-top-right-logo {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            z-index: 20;
-            height: 32px;
-            width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 10px rgba(4, 8, 18, 0.85));
-            pointer-events: none;
-        }
-
-        /* Indikator Dots Slideshow di Pojok Kiri Atas */
-        .slide-dots {
-            position: absolute;
-            top: 18px;
-            left: 16px;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 8px;
-            border-radius: 9999px;
-            background: rgba(6, 11, 25, 0.55);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(56, 189, 248, 0.22);
-        }
-
-        .slide-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.35);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .slide-dot.active {
-            width: 14px;
-            background: #38bdf8;
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
-        }
-
-        /* 3. Kartu Link Gaming Modern Dark Blue */
-        .gaming-card {
-            position: relative;
-            background: rgba(13, 23, 46, 0.90);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(56, 189, 248, 0.16);
-            border-radius: 18px;
-            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-                        background-color 0.22s ease,
-                        border-color 0.22s ease,
-                        box-shadow 0.22s ease;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(14px);
-            animation: fadeUpCard 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        @keyframes fadeUpCard {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .gaming-card:hover {
-            transform: translateY(-2px);
-            background: rgba(18, 32, 64, 0.96);
-            border-color: rgba(56, 189, 248, 0.42);
-            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6), 0 0 16px rgba(56, 189, 248, 0.14);
-        }
-
-        .gaming-card:active {
-            transform: scale(0.98);
-        }
-
-        /* Featured Roblox Card (Royal & Electric Blue) */
-        .card-roblox-featured {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.42) 0%, rgba(14, 165, 233, 0.25) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.55);
-            box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
-        }
-
-        .card-roblox-featured:hover {
-            border-color: #38bdf8;
-            box-shadow: 0 10px 32px rgba(56, 189, 248, 0.35);
-        }
-
-        /* Highlight Saweria Card (Harmonis Dark Blue + Gold Accent) */
-        .card-saweria-highlight {
-            background: linear-gradient(135deg, rgba(15, 29, 58, 0.95) 0%, rgba(30, 58, 138, 0.35) 100%);
-            border: 1px solid rgba(251, 191, 36, 0.42);
-            box-shadow: 0 6px 24px rgba(2, 6, 23, 0.5);
-        }
-
-        .card-saweria-highlight:hover {
-            border-color: #fbbf24;
-            box-shadow: 0 8px 28px rgba(251, 191, 36, 0.2);
-        }
-
-        /* Shimmer Halus pada Tombol Utama */
-        .shimmer-effect::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -120%;
-            width: 55%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
-            transform: skewX(-22deg);
-            animation: cardShimmer 4.5s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes cardShimmer {
-            0%, 60% { left: -120%; }
-            100% { left: 180%; }
-        }
-
-        /* Efek Ripple Sentuhan Ringan */
-        .ripple-circle {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: rippleExpand 0.5s ease-out;
-            background: rgba(56, 189, 248, 0.25);
-            pointer-events: none;
-        }
-
-        @keyframes rippleExpand {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* Toast Notifikasi Copy ID */
-        #copyToast {
-            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        /* 4. Kartu Embed YouTube Live / Stream Terakhir */
-        .yt-stream-card {
-            background: linear-gradient(180deg, rgba(13, 25, 52, 0.95) 0%, rgba(8, 15, 34, 0.98) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(56, 189, 248, 0.32);
-            border-radius: 20px;
-            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.78), 0 0 20px rgba(37, 99, 235, 0.14);
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(14px);
-            animation: fadeUpCard 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        .yt-aspect-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background-color: #040812;
-            overflow: hidden;
-        }
-
-        .yt-aspect-box iframe {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-    </style>
+    /* Custom audio range slider */
+    input[type="range"].audio-range {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(148, 163, 184, 0.28);
+      height: 5px;
+      border-radius: 9999px;
+      outline: none;
+    }
+    input[type="range"].audio-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 9999px;
+      background: #60a5fa;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.8);
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center justify-center py-10 px-3 sm:px-6 lg:px-10 selection:bg-blue-500 selection:text-white">
 
-    <!-- Cahaya Latar Belakang Ambient -->
-    <div class="ambient-bg"></div>
+  <!-- Hidden HTML5 Audio Element -->
+  <audio id="bgAudio" src="https://files.catbox.moe/soz2fe.ogg" preload="metadata"></audio>
 
-    <!-- Kontainer Mobile Utama -->
-    <main class="app-shell">
+  <!-- Main Wrapper allowing pop-out overlays on desktop -->
+  <main class="relative w-full max-w-[1220px] my-4 lg:my-8">
 
-        <!-- 1. STICKY TOP RUNNING TEXT / MARQUEE -->
-        <div class="marquee-bar select-none" aria-label="Running Text Pengumuman">
-            <div class="marquee-track font-gaming text-xs font-bold tracking-widest text-sky-300 uppercase">
-                <span class="mx-4">🎮 WELCOME TO OINK GAMING HUB</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-white">GAMING &amp; CONTENT CREATOR</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-amber-300">SUPPORT STREAM VIA SAWERIA</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-sky-300">LIVE STREAM &amp; KONTEN SERU SETIAP HARI</span>
-                <!-- Duplikasi untuk looping tanpa jeda -->
-                <span class="mx-4">🎮 WELCOME TO OINK GAMING HUB</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-white">GAMING &amp; CONTENT CREATOR</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-amber-300">SUPPORT STREAM VIA SAWERIA</span>
-                <span class="text-blue-500">•</span>
-                <span class="mx-4 text-sky-300">LIVE STREAM &amp; KONTEN SERU SETIAP HARI</span>
-            </div>
+    <!-- FLOATING TOP NAVBAR (Protruding above the top edge on desktop) -->
+    <nav aria-label="Navigasi Utama" class="relative lg:absolute lg:-top-6 lg:left-1/2 lg:-translate-x-1/2 z-40 mx-auto mb-5 lg:mb-0 w-fit bg-ice text-navy-800 rounded-full px-5 sm:px-7 py-2.5 shadow-float border border-blue-100/80 flex items-center gap-5 sm:gap-8">
+      <button onclick="scrollToTopAndReset()" title="Beranda" class="p-1.5 rounded-full text-navy-500 hover:bg-blue-50 hover:scale-110 transition-all cursor-pointer" aria-label="Beranda">
+        <i class="fa-solid fa-house text-base sm:text-lg"></i>
+      </button>
+      <button onclick="openLightbox(currentSlideIndex)" title="Buka Galeri Foto" class="p-1.5 rounded-full text-navy-700/75 hover:text-navy-500 hover:bg-blue-50 hover:scale-110 transition-all cursor-pointer" aria-label="Galeri Foto">
+        <i class="fa-solid fa-images text-base sm:text-lg"></i>
+      </button>
+      <a href="https://www.youtube.com/@iniioinkk/live" target="_blank" rel="noopener noreferrer" title="YouTube Live" class="p-1.5 rounded-full text-navy-700/75 hover:text-red-500 hover:bg-red-50 hover:scale-110 transition-all relative" aria-label="YouTube Live">
+        <i class="fa-solid fa-tower-broadcast text-base sm:text-lg"></i>
+        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+      </a>
+      <a href="https://saweria.co/oinkgaming" target="_blank" rel="noopener noreferrer" title="Support via Saweria" class="p-1.5 rounded-full text-navy-700/75 hover:text-pink-500 hover:bg-pink-50 hover:scale-110 transition-all" aria-label="Saweria Support">
+        <i class="fa-solid fa-heart text-base sm:text-lg"></i>
+      </a>
+      <button onclick="toggleLinksDrawer(true)" title="Semua Tautan Oink" class="p-1.5 rounded-full text-navy-700/75 hover:text-navy-500 hover:bg-blue-50 hover:scale-110 transition-all cursor-pointer" aria-label="Semua Tautan">
+        <i class="fa-solid fa-user-astronaut text-base sm:text-lg"></i>
+      </button>
+    </nav>
+
+    <!-- MAIN DARK NAVY TABLET DASHBOARD FRAME -->
+    <div class="relative rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-[#0f1b3d] via-[#13234d] to-[#1a2d63] p-4 sm:p-6 lg:p-7 shadow-tablet border border-blue-400/20">
+
+      <!-- Subtle inner ambient glow -->
+      <div class="pointer-events-none absolute inset-0 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 right-1/3 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl"></div>
+      </div>
+
+      <!-- TOP HEADER BAR INSIDE TABLET FRAME -->
+      <header class="relative z-20 flex items-center justify-between gap-4 mb-5 lg:mb-6 pt-1">
+        <!-- Left: Logo Oink -->
+        <div class="flex items-center gap-3">
+          <div class="h-10 sm:h-12 px-2.5 py-1 rounded-2xl bg-navy-900/50 border border-blue-400/20 backdrop-blur-md flex items-center gap-2.5">
+            <img
+              src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0"
+              alt="Logo Oink"
+              class="h-8 sm:h-9 w-auto object-contain rounded-lg"
+              onerror="this.src='https://placehold.co/120x40/0f1b3d/60a5fa?text=OINK'"
+            />
+            <span class="hidden sm:inline-block font-display font-bold tracking-wide text-blue-100 text-sm">OINK<span class="text-blue-400">.TV</span></span>
+          </div>
         </div>
 
-        <!-- 2. HERO SECTION 1:1 DENGAN LOGO PNG PUTIH KECIL DI KANAN ATAS -->
-        <header class="hero-section">
-            <!-- Indikator Dots Slideshow di Kiri Atas -->
-            <div id="slideDots" class="slide-dots" aria-hidden="true"></div>
+        <!-- Right: Tablet Status Bar Icons + Live Clock -->
+        <div class="flex items-center gap-3 text-blue-100/85 text-xs sm:text-sm font-semibold bg-navy-900/40 px-3.5 py-1.5 rounded-full border border-blue-400/15">
+          <span id="liveClock" class="tabular-nums tracking-wide text-blue-200">--:--</span>
+          <span class="text-blue-400/40">|</span>
+          <i class="fa-solid fa-signal text-xs"></i>
+          <i class="fa-solid fa-wifi text-xs"></i>
+          <div class="flex items-center gap-1">
+            <i class="fa-solid fa-battery-three-quarters text-sm text-blue-300"></i>
+          </div>
+        </div>
+      </header>
 
-            <!-- Logo PNG Putih Kecil di Kanan Atas -->
-            <img src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0" 
-                 alt="Logo Oink Gaming" 
-                 loading="eager" 
-                 decoding="async"
-                 class="hero-top-right-logo"
-                 onerror="this.style.display='none'">
+      <!-- MOBILE / TABLET COMPACT HERO AVATAR (Hidden on Desktop where pop-out takes over) -->
+      <div class="lg:hidden relative z-20 mb-5 flex items-center gap-4 bg-navy-900/60 border border-blue-400/20 rounded-3xl p-3.5 backdrop-blur-md">
+        <img
+          src="https://lh3.googleusercontent.com/d/1q49e8IZAuvSRKmpA3Gh1DJYaLTPCuxzO=s0"
+          alt="Avatar Profil Oink"
+          class="w-20 h-20 rounded-2xl object-cover object-top border-2 border-blue-400/50 shadow-lg shrink-0 bg-navy-800"
+          onerror="this.src='https://placehold.co/120x120/0f1b3d/f8fafc?text=Oink'"
+        />
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-display font-bold text-xl text-white">Oink</span>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/25 text-blue-200 border border-blue-400/30">@iniioinkk</span>
+          </div>
+          <p class="text-xs text-blue-100/80 mt-1 line-clamp-2">Gamer Roblox, Live Streamer &amp; Kreator Konten Anime / BL.</p>
+        </div>
+      </div>
 
-            <!-- Background Slideshow 1:1 (Tanpa Zoom) -->
-            <div id="heroSlideshow" class="hero-bg-slideshow">
-                <img src="https://lh3.googleusercontent.com/d/1vwGDH9S4f2voV7hsvjsZaHx80Uze_9OG=s0" alt="Slide 1" class="hero-slide active" loading="eager">
-                <img src="https://lh3.googleusercontent.com/d/1UUEQnQACOukpOacZ74Q_C5oPRFucsNeu=s0" alt="Slide 2" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1PJDQAzJ0Li9GgCnbk0a55v8yjfVEECNb=s0" alt="Slide 3" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1NVb6uOK9W6djoLTfx52mE0M7h1MCWx6E=s0" alt="Slide 4" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1qa8PXAyVTBsuIwlR20XCaO9NEP9kf8NM=s0" alt="Slide 5" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1obWE7fsYnGB6GoqyPjvth4LCapdkPc-v=s0" alt="Slide 6" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1j52qCENE5LF-Qa7mb-WoTwJdYmGm4UvC=s0" alt="Slide 7" class="hero-slide" loading="lazy">
-                <img src="https://lh3.googleusercontent.com/d/1gmQCc-7YybEdH2gRRCJsDzN2w6tTfsZ0=s0" alt="Slide 8" class="hero-slide" loading="lazy">
+      <!-- INNER BENTO GRID (3 Columns on Desktop) -->
+      <div class="relative z-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 items-stretch">
+
+        <!-- ===================================================== -->
+        <!-- COLUMN 1 (LEFT-INNER): About Oink + Music Player       -->
+        <!-- ===================================================== -->
+        <div class="lg:col-span-3 flex flex-col gap-4 lg:pl-6">
+
+          <!-- About Oink Card -->
+          <section class="rounded-3xl bg-navy-900/70 border border-blue-400/20 backdrop-blur-md overflow-hidden shadow-lg flex flex-col">
+            <!-- Translucent Navy Header -->
+            <div class="bg-blue-500/20 border-b border-blue-400/20 px-4 py-2.5 text-center">
+              <h2 class="text-xs sm:text-sm font-bold tracking-wide text-blue-100">About Character Oink</h2>
             </div>
 
-            <!-- Overlay Gradient Hitam / Dark Blue Halus di Bawah agar Menyatu dengan Kartu -->
-            <div class="hero-gradient-mask"></div>
-        </header>
-
-        <!-- 3. DAFTAR TOMBOL LINK GAMING (Dinaikkan Menyatu di Atas Gradasi Bawah Hero) -->
-        <section class="relative z-20 -mt-20 px-4 pb-8 flex-1 flex flex-col gap-3" aria-label="Daftar Tautan Utama">
-
-            <!-- EMBED YOUTUBE LIVE / LATEST STREAM -->
-            <div style="animation-delay: 0.02s;" class="yt-stream-card mb-0.5">
-                <!-- Header Status Stream -->
-                <div class="px-3.5 py-2.5 flex items-center justify-between gap-2 border-b border-sky-500/15 bg-navy-950/60">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <span id="ytLiveDot" class="relative flex h-2.5 w-2.5 shrink-0">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
-                        </span>
-                        <span id="ytStatusLabel" class="font-gaming text-xs font-bold tracking-wider text-white uppercase truncate">
-                            LIVE / STREAM TERAKHIR
-                        </span>
-                    </div>
-                    <a href="https://www.youtube.com/@iniioinkk/streams" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="font-gaming text-[11px] font-bold tracking-wider text-sky-400 hover:text-sky-300 uppercase flex items-center gap-1 shrink-0 transition-colors">
-                        <span>BUKA CHANNEL</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                    </a>
-                </div>
-
-                <!-- Container Video 16:9 Responsif -->
-                <div id="ytPlayerWrapper" class="yt-aspect-box">
-                    <div id="ytFallbackState" class="absolute inset-0 flex flex-col items-center justify-center p-5 text-center bg-gradient-to-br from-navy-900 via-navy-800 to-blue-950">
-                        <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-400/35 flex items-center justify-center text-rose-400 mb-2.5 shadow-lg">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                            </svg>
-                        </div>
-                        <p id="ytStreamTitle" class="font-gaming text-sm font-bold text-white tracking-wide line-clamp-1">
-                            @iniioinkk • Live &amp; Replay
-                        </p>
-                        <p class="text-[11px] text-slate-300 mt-1 max-w-[260px]">
-                            Tonton siaran langsung atau rekaman stream terakhir langsung di YouTube!
-                        </p>
-                        <a href="https://www.youtube.com/@iniioinkk/live" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           class="mt-3 px-4 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-navy-950 font-gaming text-xs font-bold tracking-wider uppercase shadow-md transition-all active:scale-95">
-                            ▶ TONTON LIVE / REPLAY
-                        </a>
-                    </div>
-                </div>
+            <!-- Landscape Banner Image -->
+            <div class="relative h-32 sm:h-36 w-full overflow-hidden bg-navy-950">
+              <img
+                src="https://i.ibb.co.com/xtLMZPLP/Gemini-Generated-Image-9me7yt9me7yt9me7-Copy.webp"
+                alt="Banner Profil Oink"
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                onerror="this.src='https://placehold.co/400x200/0f1b3d/60a5fa?text=Oink+Banner'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-transparent"></div>
+              <span class="absolute bottom-2 right-2.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-600/80 text-white backdrop-blur-sm">
+                @iniioinkk
+              </span>
             </div>
 
-            <!-- FEATURED CARD 1: ROBLOX PROFILE -->
-            <a href="https://www.roblox.com/users/8936339878/profile" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               style="animation-delay: 0.05s;"
-               class="gaming-card card-roblox-featured shimmer-effect p-4 flex items-center justify-between gap-3 group">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <div class="w-12 h-12 rounded-2xl bg-sky-400/15 border border-sky-300/40 flex items-center justify-center text-sky-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <!-- Ikon Roblox -->
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M5.164 0L.16 18.928L18.836 24L23.84 5.072L5.164 0ZM14.023 15.208L8.792 13.785L10.215 8.554L15.446 9.977L14.023 15.208Z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <div class="flex items-center gap-2">
-                            <h2 class="font-gaming text-lg font-bold text-white tracking-wide truncate">ROBLOX PROFILE</h2>
-                        </div>
-                        <span class="inline-block mt-0.5 px-2.5 py-0.5 rounded-md bg-sky-400 text-navy-950 font-gaming text-[11px] font-bold tracking-wider uppercase">
-                            ADD FRIEND / JOIN GAME
-                        </span>
-                    </div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-sky-400/15 text-sky-300 flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </div>
-            </a>
+            <!-- Concise About Me Text -->
+            <div class="p-4 text-xs leading-relaxed text-blue-100/90 space-y-2">
+              <p>
+                Halo, aku <strong class="text-blue-300 font-bold">Oink</strong>! Seorang gamer dan kreator konten yang aktif bermain <strong class="text-white">Roblox</strong> serta membagikan keseruan gameplay dan live stream.
+              </p>
+              <p class="text-blue-200/80">
+                Selain dunia gaming, aku juga suka tema-tema <strong class="text-blue-300">anime</strong> dan <strong class="text-blue-300">Boys Love (BL)</strong>. Yuk, mampir ke sosial media dan channel-ku untuk ngobrol, mabar, atau dukung karya-karyaku!
+              </p>
+              <div class="flex justify-end gap-1 pt-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400/60"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-400/30"></span>
+              </div>
+            </div>
+          </section>
 
-            <!-- HIGHLIGHT CARD 2: SAWERIA -->
-            <a href="https://saweria.co/oinkgaming" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               style="animation-delay: 0.12s;"
-               class="gaming-card card-saweria-highlight shimmer-effect p-4 flex items-center justify-between gap-3 group">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <!-- Ikon Donasi / Support -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h2 class="font-gaming text-lg font-bold text-amber-300 tracking-wide truncate">SAWERIA SUPPORT</h2>
-                        <p class="text-xs text-slate-300 font-medium truncate">Dukung konten &amp; live stream Oink Gaming</p>
-                    </div>
+          <!-- Functional Music Player Card -->
+          <section class="rounded-3xl bg-ice text-navy-900 p-3.5 shadow-float border border-blue-100 flex flex-col gap-3 mt-auto relative z-30">
+            <div class="flex items-center gap-3">
+              <!-- Square Avatar 1x1 Thumbnail -->
+              <div class="relative w-14 h-14 rounded-2xl overflow-hidden shrink-0 shadow-md border border-blue-200 bg-navy-900">
+                <img
+                  src="https://lh3.googleusercontent.com/d/1KTCVUhlUi1bqBZtTkEyyr-_Zk7kysnTi=s0"
+                  alt="Cover Lagu Oink"
+                  id="musicThumb"
+                  class="w-full h-full object-cover transition-transform duration-500"
+                  onerror="this.src='https://placehold.co/100x100/0f1b3d/f8fafc?text=Music'"
+                />
+                <div id="musicPlayingBadge" class="hidden absolute inset-0 bg-navy-900/35 flex items-center justify-center">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-ping"></span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-amber-400/15 text-amber-300 flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </div>
-            </a>
+              </div>
 
-            <!-- Pemisah Kategori Rapi -->
-            <div class="flex items-center gap-3 my-1.5 px-1">
-                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"></div>
-                <span class="font-gaming text-[11px] font-bold tracking-[0.18em] text-sky-400/80 uppercase">Social Media &amp; Community</span>
-                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"></div>
+              <!-- Track Info -->
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Music Player</span>
+                  <!-- Heart / Like Button -->
+                  <button id="likeTrackBtn" onclick="toggleLikeTrack()" title="Sukai Lagu" class="p-1.5 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all cursor-pointer" aria-label="Sukai Lagu">
+                    <i id="likeTrackIcon" class="fa-regular fa-heart text-sm"></i>
+                  </button>
+                </div>
+                <p class="font-bold text-xs sm:text-sm text-navy-900 truncate mt-1">Oink's Theme BGM</p>
+                <p class="text-[11px] text-slate-500 truncate">@iniioinkk • Chill Mix</p>
+              </div>
             </div>
 
-            <!-- CARD 3: TIKTOK -->
-            <a href="https://www.tiktok.com/@iniioinkk" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               style="animation-delay: 0.18s;"
-               class="gaming-card p-3.5 flex items-center justify-between gap-3 group">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-sky-400/25 flex items-center justify-center text-sky-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-gaming text-base font-bold text-white tracking-wide">TIKTOK</h3>
-                        <p class="text-xs text-slate-400 truncate">@iniioinkk • Klip Lucu &amp; Momen Seru</p>
-                    </div>
+            <!-- Progress Bar & Time -->
+            <div class="space-y-1">
+              <input
+                type="range"
+                id="audioProgress"
+                min="0"
+                max="100"
+                value="0"
+                aria-label="Durasi Lagu"
+                class="audio-range w-full cursor-pointer"
+              />
+              <div class="flex items-center justify-between text-[10px] font-semibold text-slate-500 tabular-nums">
+                <span id="currentTimeLabel">0:00</span>
+                <span id="durationLabel">0:00</span>
+              </div>
+            </div>
+
+            <!-- Controls Row -->
+            <div class="flex items-center justify-between gap-2 pt-0.5">
+              <button id="playPauseBtn" onclick="togglePlayPause()" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-2xl bg-navy-800 hover:bg-blue-600 text-white text-xs font-bold shadow-md transition-all cursor-pointer active:scale-95">
+                <i id="playPauseIcon" class="fa-solid fa-play"></i>
+                <span id="playPauseText">Putar Lagu</span>
+              </button>
+
+              <!-- Mute / Volume Toggle -->
+              <button id="muteBtn" onclick="toggleMute()" title="Bisukan / Suarakan" class="w-9 h-9 rounded-2xl bg-blue-50 hover:bg-blue-100 text-navy-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" aria-label="Toggle Mute">
+                <i id="muteIcon" class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- COLUMN 2 (MIDDLE): Highlights + Waveform + Streams     -->
+        <!-- ===================================================== -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+
+          <!-- Creator Highlights Card -->
+          <section class="rounded-3xl bg-navy-900/65 border border-blue-400/20 backdrop-blur-md p-4 shadow-lg">
+            <div class="bg-blue-500/20 border border-blue-400/20 rounded-2xl py-2 px-3 text-center mb-3.5">
+              <h2 class="text-xs sm:text-sm font-bold tracking-wide text-blue-100">Creator Highlights</h2>
+            </div>
+
+            <div class="space-y-3">
+              <!-- Highlight 1: Roblox Gamer -->
+              <a href="https://www.roblox.com/users/8936339878/profile" target="_blank" rel="noopener noreferrer" class="group flex items-start gap-3 p-3 rounded-2xl bg-navy-800/80 hover:bg-navy-700/90 border border-blue-400/15 transition-all">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/25 text-blue-300 group-hover:bg-blue-500 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                  <i class="fa-solid fa-gamepad text-base"></i>
                 </div>
-                <span class="text-slate-400 group-hover:text-sky-300 group-hover:translate-x-1 transition-all shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
-
-            <!-- CARD 4: YOUTUBE -->
-            <a href="https://www.youtube.com/@iniioinkk" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               style="animation-delay: 0.24s;"
-               class="gaming-card p-3.5 flex items-center justify-between gap-3 group">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-sky-400/25 flex items-center justify-center text-sky-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-gaming text-base font-bold text-white tracking-wide">YOUTUBE</h3>
-                        <p class="text-xs text-slate-400 truncate">@iniioinkk • Gameplay &amp; Live Streaming</p>
-                    </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-1">
+                    <h3 class="text-xs sm:text-sm font-bold text-white group-hover:text-blue-200 transition-colors">Roblox Gamer</h3>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-blue-300/70"></i>
+                  </div>
+                  <p class="text-[11px] leading-snug text-blue-100/75 mt-0.5">Aktif bermain Roblox &amp; mabar bareng komunitas.</p>
                 </div>
-                <span class="text-slate-400 group-hover:text-sky-300 group-hover:translate-x-1 transition-all shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
+              </a>
 
-            <!-- CARD 5: INSTAGRAM -->
-            <a href="https://www.instagram.com/iniioinkk" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               style="animation-delay: 0.30s;"
-               class="gaming-card p-3.5 flex items-center justify-between gap-3 group">
-                <div class="flex items-center gap-3.5 min-w-0">
-                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-sky-400/25 flex items-center justify-center text-sky-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-gaming text-base font-bold text-white tracking-wide">INSTAGRAM</h3>
-                        <p class="text-xs text-slate-400 truncate">@iniioinkk • Update &amp; Info Jadwal</p>
-                    </div>
+              <!-- Highlight 2: Live Streamer (Elevated / Pop-out item) -->
+              <a href="https://www.youtube.com/@iniioinkk/live" target="_blank" rel="noopener noreferrer" class="group relative flex items-start gap-3 p-3.5 rounded-2xl bg-ice text-navy-900 shadow-float border border-blue-200 lg:scale-[1.04] lg:translate-x-1.5 hover:border-blue-400 transition-all z-10">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <i class="fa-solid fa-video text-sm"></i>
                 </div>
-                <span class="text-slate-400 group-hover:text-sky-300 group-hover:translate-x-1 transition-all shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-1">
+                    <h3 class="text-xs sm:text-sm font-extrabold text-blue-600 flex items-center gap-1.5">
+                      Live Streamer
+                      <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    </h3>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-blue-500"></i>
+                  </div>
+                  <p class="text-[11px] leading-snug text-slate-600 mt-0.5">Bagikan keseruan gameplay &amp; live stream di YouTube.</p>
+                </div>
+              </a>
 
-            <!-- CARD 6: DISCORD + TOMBOL COPY ID RAPI -->
-            <div style="animation-delay: 0.36s;" class="gaming-card p-3.5 flex items-center justify-between gap-2 group">
-                <a href="https://discord.com/users/1004430604131123220" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="flex items-center gap-3.5 min-w-0 flex-1">
-                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-sky-400/25 flex items-center justify-center text-sky-300 shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-gaming text-base font-bold text-white tracking-wide">DISCORD</h3>
-                        <p class="text-xs text-slate-400 truncate">Add Friend &amp; Voice Chat</p>
-                    </div>
-                </a>
+              <!-- Highlight 3: Anime & BL -->
+              <div class="flex items-start gap-3 p-3 rounded-2xl bg-navy-800/80 border border-blue-400/15">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/25 text-indigo-300 flex items-center justify-center shrink-0">
+                  <i class="fa-solid fa-sparkles text-base"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-xs sm:text-sm font-bold text-white">Anime &amp; BL</h3>
+                  <p class="text-[11px] leading-snug text-blue-100/75 mt-0.5">Menyukai tema anime, Boys Love (BL), dan karya kreatif.</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-                <!-- Tombol Copy ID Rapi -->
-                <button type="button"
-                        onclick="copyDiscordId(event)"
-                        aria-label="Salin Discord ID"
-                        class="px-3 py-2 rounded-xl bg-blue-600/25 hover:bg-blue-600/45 border border-sky-400/35 text-sky-300 font-gaming text-xs font-bold tracking-wider flex items-center gap-1.5 shrink-0 transition-all active:scale-95">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <span>COPY ID</span>
+          <!-- Interactive Audio Waveform Bar Card -->
+          <button
+            id="waveformCard"
+            onclick="togglePlayPause()"
+            title="Klik untuk Putar / Jeda Musik"
+            class="group w-full rounded-3xl bg-ice px-4 py-4 shadow-float border border-blue-100 flex items-center justify-center gap-1.5 cursor-pointer hover:bg-blue-50/90 transition-colors"
+            aria-label="Audio Waveform - Klik untuk putar atau jeda musik"
+          >
+            <!-- Generated waveform bars -->
+            <div id="waveformBars" class="flex items-center justify-center gap-[4px] sm:gap-[5px] h-10 w-full">
+              <!-- Bars injected by JS for clean rhythm -->
+            </div>
+          </button>
+
+          <!-- Bottom Highlight Card: Streams & Support -->
+          <section class="rounded-3xl bg-ice text-navy-900 p-3.5 shadow-float border border-blue-100 flex flex-col gap-3 mt-auto">
+            <div class="relative h-28 sm:h-32 w-full rounded-2xl overflow-hidden bg-navy-900 group">
+              <img
+                src="https://lh3.googleusercontent.com/d/1vwGDH9S4f2voV7hsvjsZaHx80Uze_9OG=s0"
+                alt="Preview Stream Oink"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
+                onclick="openLightbox(0)"
+                onerror="this.src='https://placehold.co/400x200/0f1b3d/60a5fa?text=Oink+Streams'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-navy-900/75 via-transparent to-transparent pointer-events-none"></div>
+              <span class="absolute top-2 left-2 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-navy-900/80 text-blue-200 backdrop-blur-sm">
+                <i class="fa-solid fa-bolt text-amber-400 mr-1"></i>Streams &amp; Support
+              </span>
+            </div>
+
+            <p class="text-[11px] sm:text-xs leading-relaxed text-slate-600 px-0.5">
+              Jangan lewatkan arsip live stream Roblox terbaru di YouTube, atau kirim dukungan manis lewat <strong class="text-navy-800">Saweria</strong>!
+            </p>
+
+            <div class="grid grid-cols-2 gap-2">
+              <a href="https://www.youtube.com/@iniioinkk/streams" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-navy-800 hover:bg-red-600 text-white text-[11px] font-bold transition-colors">
+                <i class="fa-brands fa-youtube"></i>
+                <span>YT Streams</span>
+              </a>
+              <a href="https://saweria.co/oinkgaming" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-blue-600 hover:bg-amber-500 text-white text-[11px] font-bold transition-colors">
+                <i class="fa-solid fa-gift"></i>
+                <span>Saweria</span>
+              </a>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- COLUMN 3 (RIGHT MAIN PANEL - CRISP ICE-WHITE)          -->
+        <!-- ===================================================== -->
+        <div class="md:col-span-2 lg:col-span-5 relative rounded-[2rem] bg-ice text-navy-900 p-5 sm:p-6 shadow-float flex flex-col justify-between gap-5">
+
+          <!-- Top Bar: Hamburger Menu + Protruding Search Bar -->
+          <div class="flex items-center gap-3">
+            <button
+              onclick="toggleLinksDrawer(true)"
+              title="Buka Semua Tautan"
+              class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-blue-100 text-navy-800 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              aria-label="Menu Semua Tautan"
+            >
+              <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+
+            <!-- Protruding Search Bar Pill -->
+            <div class="relative flex-1 lg:-mr-10 z-20">
+              <div class="flex items-center bg-white rounded-full shadow-float-light border border-blue-100 px-4 py-2.5 focus-within:ring-2 focus-within:ring-blue-400 transition-all">
+                <input
+                  id="linkSearchInput"
+                  type="text"
+                  placeholder="cari link (roblox, tiktok, saweria...)"
+                  class="w-full bg-transparent text-xs sm:text-sm text-navy-900 placeholder-slate-400 focus:outline-none pr-2"
+                />
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden text-slate-400 hover:text-navy-800 mr-2 cursor-pointer" aria-label="Hapus Pencarian">
+                  <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
+                <i class="fa-solid fa-magnifying-glass text-blue-500 text-sm"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Title & Bio Section -->
+          <div class="space-y-2">
+            <!-- Mini Decorative Row (plus icon, dark navy swatch, mini 1x1 avatar) -->
+            <div class="flex items-center justify-end gap-1.5">
+              <span class="w-6 h-6 rounded-md border border-blue-200 text-blue-500 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-plus"></i>
+              </span>
+              <span class="w-6 h-6 rounded-md bg-navy-800 border border-navy-700" title="Dark Navy Theme"></span>
+              <img
+                src="https://lh3.googleusercontent.com/d/1KTCVUhlUi1bqBZtTkEyyr-_Zk7kysnTi=s0"
+                alt="Mini Avatar Oink"
+                class="w-6 h-6 rounded-md object-cover border border-blue-300"
+                onerror="this.src='https://placehold.co/32x32/0f1b3d/f8fafc?text=O'"
+              />
             </div>
 
-        </section>
+            <!-- Big Bold Stylized OINK! Title + Pixel Heart SVG -->
+            <div class="flex items-center flex-wrap gap-2.5">
+              <h1 class="oink-title text-4xl sm:text-5xl font-bold leading-none">OINK!</h1>
+              <!-- Pixel Heart SVG in Dark Navy / Royal Blue -->
+              <svg class="w-9 h-9 sm:w-10 sm:h-10 drop-shadow-sm shrink-0" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M2 2H6V3H7V4H9V3H10V2H14V3H15V7H14V8H13V9H12V10H11V11H10V12H9V13H7V12H6V11H5V10H4V9H3V8H2V7H1V3H2V2Z" fill="#2563eb"/>
+                <path d="M3 3H5V4H4V6H3V3Z" fill="#93c5fd"/>
+                <path d="M2 1H6V2H2V1ZM10 1H14V2H10V1ZM1 2H2V3H1V2ZM6 2H7V3H6V2ZM9 2H10V3H9V2ZM14 2H15V3H14V2ZM0 3H1V7H0V3ZM7 3H9V4H7V3ZM15 3H16V7H15V3ZM1 7H2V8H1V7ZM14 7H15V8H14V7ZM2 8H3V9H2V8ZM13 8H14V9H13V8ZM3 9H4V10H3V9ZM12 9H13V10H12V9ZM4 10H5V11H4V10ZM11 10H12V11H11V10ZM5 11H6V12H5V11ZM10 11H11V12H10V11ZM6 12H7V13H6V12ZM9 12H10V13H9V12ZM7 13H9V14H7V13Z" fill="#0f1b3d"/>
+              </svg>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-navy-800 text-blue-200">@iniioinkk</span>
+            </div>
 
-        <!-- 4. FOOTER BERSIH -->
-        <footer class="px-5 py-5 border-t border-sky-500/10 bg-navy-950/60 text-center mt-auto">
-            <p class="font-gaming text-xs font-bold tracking-widest text-sky-400/80 uppercase">
-                OINK GAMING • @INIIOINKK
+            <!-- Short Bio Text -->
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Gamer <strong class="text-navy-800">Roblox</strong>, live streamer YouTube, &amp; penikmat <strong class="text-blue-600">Anime &amp; Boys Love (BL)</strong>. Mampir yuk untuk mabar &amp; ngobrol seru!
             </p>
-            <p class="text-[11px] text-slate-500 mt-1">
-                © 2026 All Rights Reserved
-            </p>
-        </footer>
+          </div>
 
-    </main>
+          <!-- Interactive 8-Slide Photo Gallery (Shows 3 Portrait Cards at a time) -->
+          <section class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-navy-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-camera-retro text-blue-500"></i>
+                Galeri Oink <span id="galleryCounter" class="text-slate-400 font-semibold">(1–3 / 8)</span>
+              </span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="prevGalleryPage()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-navy-800 hover:text-white text-navy-800 flex items-center justify-center transition-colors cursor-pointer" aria-label="Slide Sebelumnya">
+                  <i class="fa-solid fa-chevron-left text-[11px]"></i>
+                </button>
+                <button onclick="nextGalleryPage()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-navy-800 hover:text-white text-navy-800 flex items-center justify-center transition-colors cursor-pointer" aria-label="Slide Berikutnya">
+                  <i class="fa-solid fa-chevron-right text-[11px]"></i>
+                </button>
+              </div>
+            </div>
 
-    <!-- Toast Notifikasi Salin Discord ID -->
-    <div id="copyToast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-3">
-        <div class="px-4 py-2.5 rounded-full bg-navy-800/95 border border-sky-400/50 shadow-[0_8px_24px_rgba(2,6,23,0.8)] flex items-center gap-2">
-            <span class="text-sky-400 text-sm">✓</span>
-            <span class="font-gaming text-xs font-bold tracking-wider text-white uppercase">Discord ID Berhasil Disalin!</span>
+            <!-- 3 Portrait Cards Grid -->
+            <div id="galleryGrid" class="grid grid-cols-3 gap-2.5">
+              <!-- Populated dynamically by JS -->
+            </div>
+
+            <!-- Sleek Navy Slider / Progress Bar -->
+            <div class="flex items-center justify-center gap-1.5 pt-1" id="galleryDots">
+              <!-- Dots populated dynamically by JS -->
+            </div>
+          </section>
+
+          <!-- Social Media & Gaming Links Section -->
+          <section class="space-y-3">
+            <!-- Empty state when search has no match -->
+            <div id="searchEmptyState" class="hidden text-center py-4 px-3 rounded-2xl bg-slate-100 text-slate-500 text-xs">
+              Tautan tidak ditemukan. Coba kata kunci lain seperti <strong>Roblox</strong>, <strong>YouTube</strong>, atau <strong>Saweria</strong>.
+            </div>
+
+            <!-- Row 1: Two Prominent Vertical Feature Cards (YouTube & TikTok) + Space for Pop-up Card -->
+            <div class="grid grid-cols-2 sm:grid-cols-12 gap-2.5 items-stretch">
+              <!-- YouTube Vertical Feature Card -->
+              <a
+                href="https://www.youtube.com/@iniioinkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="youtube channel video yt iniioinkk"
+                class="sm:col-span-3 group flex flex-col items-center justify-center text-center p-3 rounded-2xl bg-blue-50/90 hover:bg-navy-800 border border-blue-200/80 transition-all shadow-sm"
+              >
+                <div class="w-10 h-10 rounded-full border-2 border-blue-500/40 group-hover:border-white/40 flex items-center justify-center text-red-500 group-hover:text-white mb-1.5 transition-colors">
+                  <i class="fa-brands fa-youtube text-lg"></i>
+                </div>
+                <span class="text-xs font-extrabold text-navy-900 group-hover:text-white transition-colors">YouTube</span>
+                <span class="text-[10px] text-slate-500 group-hover:text-blue-200 truncate w-full">@iniioinkk</span>
+              </a>
+
+              <!-- TikTok Vertical Feature Card -->
+              <a
+                href="https://www.tiktok.com/@iniioinkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="tiktok video short fyp iniioinkk"
+                class="sm:col-span-3 group flex flex-col items-center justify-center text-center p-3 rounded-2xl bg-blue-50/90 hover:bg-navy-800 border border-blue-200/80 transition-all shadow-sm"
+              >
+                <div class="w-10 h-10 rounded-full border-2 border-blue-500/40 group-hover:border-white/40 flex items-center justify-center text-navy-900 group-hover:text-white mb-1.5 transition-colors">
+                  <i class="fa-brands fa-tiktok text-lg"></i>
+                </div>
+                <span class="text-xs font-extrabold text-navy-900 group-hover:text-white transition-colors">TikTok</span>
+                <span class="text-[10px] text-slate-500 group-hover:text-blue-200 truncate w-full">@iniioinkk</span>
+              </a>
+
+              <!-- Floating Pop-Up Notification Card (Overlapping right edge on desktop) -->
+              <div class="col-span-2 sm:col-span-6 relative lg:-mr-10 z-20 rounded-2xl bg-gradient-to-br from-navy-800 via-navy-700 to-blue-600 text-white p-3.5 shadow-float border border-blue-400/30 flex flex-col justify-between">
+                <!-- Notification Bell Badge -->
+                <span class="absolute -top-2.5 -right-2 w-7 h-7 rounded-full bg-blue-400 text-navy-950 flex items-center justify-center shadow-md border-2 border-ice">
+                  <i class="fa-solid fa-bell text-xs"></i>
+                </span>
+
+                <div class="flex items-start gap-2.5">
+                  <img
+                    src="https://lh3.googleusercontent.com/d/1KTCVUhlUi1bqBZtTkEyyr-_Zk7kysnTi=s0"
+                    alt="Oink Mini"
+                    class="w-11 h-11 rounded-xl object-cover border border-blue-300/60 shrink-0 shadow-sm"
+                    onerror="this.src='https://placehold.co/60x60/0f1b3d/f8fafc?text=Oink'"
+                  />
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-extrabold text-white leading-tight">Yuk Mabar &amp; Support!</h3>
+                    <p class="text-[10px] text-blue-100/90 leading-snug mt-1">
+                      Ngobrol di Discord atau traktir Oink di Saweria ya!
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 mt-2.5">
+                  <a href="https://saweria.co/oinkgaming" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-1 px-2 rounded-lg bg-white text-navy-900 hover:bg-blue-100 text-[10px] font-extrabold transition-colors">
+                    <i class="fa-solid fa-heart text-rose-500 mr-1"></i>Saweria
+                  </a>
+                  <a href="https://discord.com/users/1004430604131123220" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-1 px-2 rounded-lg bg-navy-900/70 hover:bg-indigo-500 text-white text-[10px] font-bold border border-blue-300/30 transition-colors">
+                    <i class="fa-brands fa-discord mr-1"></i>Discord
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Interactive Icon Pills for all remaining 6 links (Total 8 Links immediately accessible) -->
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <a
+                href="https://www.roblox.com/users/8936339878/profile"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="roblox game mabar profile gaming"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-navy-800 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-solid fa-cube text-blue-600"></i>
+                <span>Roblox</span>
+              </a>
+
+              <a
+                href="https://www.instagram.com/iniioinkk"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="instagram ig foto sosial media iniioinkk"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-pink-600 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-brands fa-instagram text-pink-500"></i>
+                <span>Instagram</span>
+              </a>
+
+              <a
+                href="https://discord.com/users/1004430604131123220"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="discord chat komunitas mabar profile"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-indigo-600 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-brands fa-discord text-indigo-500"></i>
+                <span>Discord</span>
+              </a>
+
+              <a
+                href="https://saweria.co/oinkgaming"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="saweria donasi donate support tip oinkgaming"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-amber-500 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-solid fa-mug-hot text-amber-500"></i>
+                <span>Saweria</span>
+              </a>
+
+              <a
+                href="https://www.youtube.com/@iniioinkk/live"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="youtube live streaming nonton yt"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-red-600 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-solid fa-tower-broadcast text-red-500"></i>
+                <span>YT Live</span>
+              </a>
+
+              <a
+                href="https://www.youtube.com/@iniioinkk/streams"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-link-item
+                data-keywords="youtube streams vod arsip replay yt"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-navy-800 text-navy-800 hover:text-white text-[11px] font-bold transition-colors border border-slate-200"
+              >
+                <i class="fa-solid fa-play-circle text-blue-600"></i>
+                <span>YT Streams</span>
+              </a>
+            </div>
+          </section>
+
         </div>
+      </div>
+
+      <!-- LEFT POP-OUT CHARACTER AVATAR (Desktop 3D Overlap Effect) -->
+      <!-- Positioned carefully at bottom-left overlapping frame edge without blocking interactive controls -->
+      <div class="hidden lg:block pointer-events-none absolute -left-14 -bottom-6 z-20 w-[235px] xl:w-[260px]">
+        <img
+          src="https://lh3.googleusercontent.com/d/1q49e8IZAuvSRKmpA3Gh1DJYaLTPCuxzO=s0"
+          alt="Karakter Pop-Out Oink"
+          class="avatar-popout w-full h-auto max-h-[310px] object-contain rounded-3xl select-none"
+          onerror="this.style.display='none'"
+        />
+      </div>
+
     </div>
 
-    <!-- Vanilla JS Ringan (Slideshow + Dots, Ripple & Copy ID) -->
-    <script>
-        // Slideshow Hero Otomatis dengan Indikator Dots
-        (function initHeroSlideshow() {
-            const slides = document.querySelectorAll('#heroSlideshow .hero-slide');
-            const dotsContainer = document.getElementById('slideDots');
-            if (slides.length <= 1) return;
+    <!-- FOOTER CREDIT -->
+    <footer class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 px-3 text-xs text-blue-300/65">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+        <span>Interactive Personal Dashboard</span>
+      </div>
+      <div class="flex items-center gap-2 font-medium">
+        <span>Oink (@iniioinkk) • Dark Navy Dashboard</span>
+        <span class="w-5 h-5 rounded-full bg-navy-800 border border-blue-400/30 flex items-center justify-center text-[10px] text-blue-300">
+          <i class="fa-solid fa-star"></i>
+        </span>
+      </div>
+    </footer>
+  </main>
 
-            let currentIndex = 0;
-            let slideTimer;
+  <!-- ===================================================== -->
+  <!-- MODAL 1: ALL LINKS DRAWER / MODAL                      -->
+  <!-- ===================================================== -->
+  <div id="linksDrawerModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-midnight/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    <div class="relative w-full max-w-md rounded-3xl bg-navy-900 border border-blue-400/30 shadow-tablet overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 bg-navy-800/90 border-b border-blue-400/20">
+        <div class="flex items-center gap-3">
+          <img
+            src="https://lh3.googleusercontent.com/d/1KTCVUhlUi1bqBZtTkEyyr-_Zk7kysnTi=s0"
+            alt="Oink Avatar"
+            class="w-9 h-9 rounded-xl object-cover border border-blue-400/40"
+            onerror="this.src='https://placehold.co/48x48/0f1b3d/f8fafc?text=O'"
+          />
+          <div>
+            <h2 id="drawerTitle" class="font-display font-bold text-lg text-white leading-none">Semua Tautan Oink</h2>
+            <p class="text-[11px] text-blue-300 mt-0.5">@iniioinkk • Gaming, Sosmed &amp; Donasi</p>
+          </div>
+        </div>
+        <button onclick="toggleLinksDrawer(false)" class="w-8 h-8 rounded-full bg-navy-700 hover:bg-blue-600 text-blue-100 flex items-center justify-center transition-colors cursor-pointer" aria-label="Tutup Menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
 
-            slides.forEach((_, idx) => {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.ariaLabel = `Slide ${idx + 1}`;
-                dot.className = idx === 0 ? 'slide-dot active' : 'slide-dot';
-                dot.addEventListener('click', () => {
-                    goToSlide(idx);
-                    resetTimer();
-                });
-                dotsContainer.appendChild(dot);
-            });
+      <div class="p-4 max-h-[70vh] overflow-y-auto space-y-2.5" id="allLinksList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
 
-            const dots = dotsContainer.querySelectorAll('.slide-dot');
+  <!-- ===================================================== -->
+  <!-- MODAL 2: FULL-SCREEN GALLERY LIGHTBOX                  -->
+  <!-- ===================================================== -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-midnight/95 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-label="Galeri Foto Layar Penuh">
+    <!-- Close & Counter -->
+    <div class="w-full max-w-4xl flex items-center justify-between mb-3 px-2">
+      <span id="lightboxCounter" class="text-xs sm:text-sm font-bold text-blue-200 bg-navy-800/80 px-3.5 py-1.5 rounded-full border border-blue-400/25">
+        Slide 1 / 8
+      </span>
+      <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-navy-800 hover:bg-blue-600 text-white flex items-center justify-center transition-colors cursor-pointer border border-blue-400/30" aria-label="Tutup Galeri">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
 
-            function goToSlide(index) {
-                slides[currentIndex].classList.remove('active');
-                dots[currentIndex].classList.remove('active');
-                currentIndex = index;
-                slides[currentIndex].classList.add('active');
-                dots[currentIndex].classList.add('active');
-            }
+    <!-- Main Image & Prev/Next -->
+    <div class="relative w-full max-w-4xl flex items-center justify-center">
+      <button onclick="changeLightboxSlide(-1)" class="absolute left-1 sm:left-3 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-navy-900/80 hover:bg-blue-600 text-white flex items-center justify-center transition-all cursor-pointer border border-blue-400/30 shadow-lg" aria-label="Foto Sebelumnya">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
 
-            function resetTimer() {
-                clearInterval(slideTimer);
-                slideTimer = setInterval(() => {
-                    goToSlide((currentIndex + 1) % slides.length);
-                }, 4000);
-            }
+      <img
+        id="lightboxImg"
+        src=""
+        alt="Galeri Oink"
+        class="max-h-[72vh] max-w-full rounded-2xl object-contain shadow-2xl border border-blue-400/25 bg-navy-900"
+      />
 
-            resetTimer();
-        })();
+      <button onclick="changeLightboxSlide(1)" class="absolute right-1 sm:right-3 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-navy-900/80 hover:bg-blue-600 text-white flex items-center justify-center transition-all cursor-pointer border border-blue-400/30 shadow-lg" aria-label="Foto Berikutnya">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
 
-        // Efek Ripple Sentuhan pada Kartu
-        document.querySelectorAll('.gaming-card').forEach(card => {
-            card.addEventListener('pointerdown', function (e) {
-                const rect = this.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
+    <!-- Thumbnail Strip -->
+    <div id="lightboxThumbs" class="mt-4 flex items-center gap-2 overflow-x-auto max-w-full py-1 px-2">
+      <!-- Populated by JS -->
+    </div>
+  </div>
 
-                const ripple = document.createElement('span');
-                ripple.style.width = ripple.style.height = `${size}px`;
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                ripple.classList.add('ripple-circle');
+  <!-- ===================================================== -->
+  <!-- TOAST NOTIFICATION (Replaces alert)                    -->
+  <!-- ===================================================== -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300">
+    <div class="flex items-center gap-2.5 bg-navy-800 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-float border border-blue-400/35">
+      <i id="toastIcon" class="fa-solid fa-circle-info text-blue-400"></i>
+      <span id="toastMessage">Pesan notifikasi</span>
+    </div>
+  </div>
 
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 550);
-            });
+  <!-- ===================================================== -->
+  <!-- JAVASCRIPT LOGIC                                       -->
+  <!-- ===================================================== -->
+  <script>
+    // =========================================================================
+    // 1. DATA: GALLERY SLIDES & ALL 8 SOCIAL/GAMING/DONATION LINKS
+    // =========================================================================
+    const GALLERY_SLIDES = [
+      { url: 'https://lh3.googleusercontent.com/d/1vwGDH9S4f2voV7hsvjsZaHx80Uze_9OG=s0', label: 'Slide 1' },
+      { url: 'https://lh3.googleusercontent.com/d/1UUEQnQACOukpOacZ74Q_C5oPRFucsNeu=s0', label: 'Slide 2' },
+      { url: 'https://lh3.googleusercontent.com/d/1PJDQAzJ0Li9GgCnbk0a55v8yjfVEECNb=s0', label: 'Slide 3' },
+      { url: 'https://lh3.googleusercontent.com/d/1NVb6uOK9W6djoLTfx52mE0M7h1MCWx6E=s0', label: 'Slide 4' },
+      { url: 'https://lh3.googleusercontent.com/d/1qa8PXAyVTBsuIwlR20XCaO9NEP9kf8NM=s0', label: 'Slide 5' },
+      { url: 'https://lh3.googleusercontent.com/d/1obWE7fsYnGB6GoqyPjvth4LCapdkPc-v=s0', label: 'Slide 6' },
+      { url: 'https://lh3.googleusercontent.com/d/1j52qCENE5LF-Qa7mb-WoTwJdYmGm4UvC=s0', label: 'Slide 7' },
+      { url: 'https://lh3.googleusercontent.com/d/1gmQCc-7YybEdH2gRRCJsDzN2w6tTfsZ0=s0', label: 'Slide 8' }
+    ];
+
+    const ALL_LINKS = [
+      {
+        name: 'Roblox Profile',
+        desc: 'Mabar Roblox bareng Oink!',
+        url: 'https://www.roblox.com/users/8936339878/profile',
+        icon: 'fa-solid fa-cube',
+        color: 'bg-blue-500/20 text-blue-300'
+      },
+      {
+        name: 'Saweria',
+        desc: 'Dukung & traktir Oink di Saweria',
+        url: 'https://saweria.co/oinkgaming',
+        icon: 'fa-solid fa-gift',
+        color: 'bg-amber-500/20 text-amber-300'
+      },
+      {
+        name: 'YouTube Channel',
+        desc: 'Video gameplay & konten @iniioinkk',
+        url: 'https://www.youtube.com/@iniioinkk',
+        icon: 'fa-brands fa-youtube',
+        color: 'bg-red-500/20 text-red-400'
+      },
+      {
+        name: 'YouTube Live',
+        desc: 'Tonton live stream yang sedang berlangsung',
+        url: 'https://www.youtube.com/@iniioinkk/live',
+        icon: 'fa-solid fa-tower-broadcast',
+        color: 'bg-rose-500/20 text-rose-400'
+      },
+      {
+        name: 'YouTube Streams',
+        desc: 'Arsip & rekaman live stream terbaru',
+        url: 'https://www.youtube.com/@iniioinkk/streams',
+        icon: 'fa-solid fa-play-circle',
+        color: 'bg-red-400/20 text-red-300'
+      },
+      {
+        name: 'TikTok',
+        desc: 'Klip seru & keseharian @iniioinkk',
+        url: 'https://www.tiktok.com/@iniioinkk',
+        icon: 'fa-brands fa-tiktok',
+        color: 'bg-cyan-500/20 text-cyan-300'
+      },
+      {
+        name: 'Instagram',
+        desc: 'Update foto & story @iniioinkk',
+        url: 'https://www.instagram.com/iniioinkk',
+        icon: 'fa-brands fa-instagram',
+        color: 'bg-pink-500/20 text-pink-300'
+      },
+      {
+        name: 'Discord Profile',
+        desc: 'Ngobrol & kenalan langsung di Discord',
+        url: 'https://discord.com/users/1004430604131123220',
+        icon: 'fa-brands fa-discord',
+        color: 'bg-indigo-500/20 text-indigo-300'
+      }
+    ];
+
+    // =========================================================================
+    // 2. TOAST NOTIFICATION HELPER
+    // =========================================================================
+    let toastTimer = null;
+    function showToast(message, iconClass = 'fa-solid fa-circle-info text-blue-400') {
+      const box = document.getElementById('toastBox');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+      msgEl.textContent = message;
+      iconEl.className = iconClass;
+      box.classList.remove('opacity-0', 'translate-y-4');
+      box.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('opacity-0', 'translate-y-4');
+        box.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    // =========================================================================
+    // 3. REAL-TIME TABLET CLOCK
+    // =========================================================================
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const clockEl = document.getElementById('liveClock');
+      if (clockEl) clockEl.textContent = `${hh}:${mm}`;
+    }
+
+    // =========================================================================
+    // 4. AUDIO PLAYER & INTERACTIVE WAVEFORM
+    // =========================================================================
+    const audio = document.getElementById('bgAudio');
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    const playPauseText = document.getElementById('playPauseText');
+    const audioProgress = document.getElementById('audioProgress');
+    const currentTimeLabel = document.getElementById('currentTimeLabel');
+    const durationLabel = document.getElementById('durationLabel');
+    const muteIcon = document.getElementById('muteIcon');
+    const waveformBarsContainer = document.getElementById('waveformBars');
+    const musicPlayingBadge = document.getElementById('musicPlayingBadge');
+
+    let isLiked = false;
+
+    // Build stylized symmetrical audio waveform bars
+    const BAR_HEIGHTS = [14, 24, 18, 32, 22, 38, 16, 28, 36, 20, 34, 40, 26, 36, 20, 30, 16, 34, 24, 18, 28, 14];
+    function initWaveform() {
+      waveformBarsContainer.innerHTML = '';
+      BAR_HEIGHTS.forEach((h, idx) => {
+        const bar = document.createElement('span');
+        bar.className = 'wave-bar w-[4px] sm:w-[5px] rounded-full bg-navy-800/80 group-hover:bg-blue-600';
+        bar.style.height = `${h}px`;
+        bar.style.animationDelay = `${(idx * 0.08).toFixed(2)}s`;
+        bar.style.animationDuration = `${(0.55 + (idx % 5) * 0.14).toFixed(2)}s`;
+        waveformBarsContainer.appendChild(bar);
+      });
+    }
+
+    function formatTime(sec) {
+      if (!isFinite(sec) || sec < 0) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updatePlayingUI(isPlaying) {
+      if (isPlaying) {
+        playPauseIcon.className = 'fa-solid fa-pause';
+        playPauseText.textContent = 'Jeda Lagu';
+        waveformBarsContainer.classList.add('waveform-playing');
+        musicPlayingBadge.classList.remove('hidden');
+        waveformBarsContainer.querySelectorAll('.wave-bar').forEach(b => {
+          b.classList.remove('bg-navy-800/80');
+          b.classList.add('bg-blue-600');
         });
+      } else {
+        playPauseIcon.className = 'fa-solid fa-play';
+        playPauseText.textContent = 'Putar Lagu';
+        waveformBarsContainer.classList.remove('waveform-playing');
+        musicPlayingBadge.classList.add('hidden');
+        waveformBarsContainer.querySelectorAll('.wave-bar').forEach(b => {
+          b.classList.add('bg-navy-800/80');
+          b.classList.remove('bg-blue-600');
+        });
+      }
+    }
 
-        // Fungsi Salin Discord User ID
-        let toastTimer;
-        function copyDiscordId(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const discordId = '1004430604131123220';
-            const tempInput = document.createElement('input');
-            tempInput.value = discordId;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            tempInput.setSelectionRange(0, 99999);
-
-            try {
-                document.execCommand('copy');
-                const toast = document.getElementById('copyToast');
-                toast.classList.remove('opacity-0', 'translate-y-3');
-                toast.classList.add('opacity-100', 'translate-y-0');
-
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => {
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', 'translate-y-3');
-                }, 2200);
-            } catch (err) {
-                console.error('Gagal menyalin ID:', err);
-            }
-
-            document.body.removeChild(tempInput);
+    async function togglePlayPause() {
+      try {
+        if (audio.paused) {
+          await audio.play();
+          updatePlayingUI(true);
+        } else {
+          audio.pause();
+          updatePlayingUI(false);
         }
+      } catch (err) {
+        console.error('Audio playback error:', err);
+        showToast('Gagal memutar audio. Coba klik sekali lagi.', 'fa-solid fa-triangle-exclamation text-amber-400');
+      }
+    }
 
-        // =========================================================================
-        // KONFIGURASI YOUTUBE LIVE & STREAM TERAKHIR (@iniioinkk)
-        // =========================================================================
-        const YT_CONFIG = {
-            CHANNEL_ID: 'UCmZHmC9J4jYqb1KsyfojmkA',
-            FALLBACK_VIDEO_ID: 'epNS0ftId9U',
-            HANDLE_URL: 'https://www.youtube.com/@iniioinkk'
+    function toggleMute() {
+      audio.muted = !audio.muted;
+      muteIcon.className = audio.muted
+        ? 'fa-solid fa-volume-xmark text-xs text-rose-500'
+        : 'fa-solid fa-volume-high text-xs';
+      showToast(audio.muted ? 'Audio dibisukan' : 'Suara audio aktif');
+    }
+
+    function toggleLikeTrack() {
+      isLiked = !isLiked;
+      const icon = document.getElementById('likeTrackIcon');
+      const btn = document.getElementById('likeTrackBtn');
+      if (isLiked) {
+        icon.className = 'fa-solid fa-heart text-sm text-rose-500';
+        btn.classList.add('bg-rose-50');
+        showToast('Kamu menyukai BGM Oink!', 'fa-solid fa-heart text-rose-400');
+      } else {
+        icon.className = 'fa-regular fa-heart text-sm';
+        btn.classList.remove('bg-rose-50');
+      }
+    }
+
+    audio.addEventListener('loadedmetadata', () => {
+      durationLabel.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        audioProgress.value = pct;
+        currentTimeLabel.textContent = formatTime(audio.currentTime);
+        durationLabel.textContent = formatTime(audio.duration);
+      }
+    });
+
+    audio.addEventListener('ended', () => {
+      updatePlayingUI(false);
+      audioProgress.value = 0;
+      currentTimeLabel.textContent = '0:00';
+    });
+
+    audioProgress.addEventListener('input', (e) => {
+      if (audio.duration) {
+        audio.currentTime = (e.target.value / 100) * audio.duration;
+      }
+    });
+
+    // =========================================================================
+    // 5. INTERACTIVE 8-SLIDE GALLERY & FULLSCREEN LIGHTBOX
+    // =========================================================================
+    let galleryStartIndex = 0; // Starting index of the 3 visible portrait cards
+    let currentSlideIndex = 0; // Active slide inside lightbox
+
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const dots = document.getElementById('galleryDots');
+      const counter = document.getElementById('galleryCounter');
+
+      grid.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const slideIdx = (galleryStartIndex + i) % GALLERY_SLIDES.length;
+        const slide = GALLERY_SLIDES[slideIdx];
+
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.onclick = () => openLightbox(slideIdx);
+        card.className = 'group relative aspect-[3/4] rounded-2xl overflow-hidden bg-navy-900 border border-blue-200/80 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500';
+        card.setAttribute('aria-label', `Lihat ${slide.label}`);
+
+        card.innerHTML = `
+          <img
+            src="${slide.url}"
+            alt="Galeri Oink ${slide.label}"
+            loading="lazy"
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            onerror="this.src='https://placehold.co/300x400/0f1b3d/60a5fa?text=${encodeURIComponent(slide.label)}'"
+          />
+          <div class="absolute inset-0 bg-navy-900/0 group-hover:bg-navy-900/35 transition-colors flex items-center justify-center">
+            <span class="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 rounded-full bg-white/90 text-navy-900 flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-expand text-xs"></i>
+            </span>
+          </div>
+          <span class="absolute bottom-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-navy-900/75 text-blue-100 backdrop-blur-sm">
+            ${slideIdx + 1}/8
+          </span>
+        `;
+        grid.appendChild(card);
+      }
+
+      const endNum = ((galleryStartIndex + 2) % GALLERY_SLIDES.length) + 1;
+      counter.textContent = `(${galleryStartIndex + 1}–${endNum} / ${GALLERY_SLIDES.length})`;
+
+      // Render slider progress dots
+      dots.innerHTML = '';
+      GALLERY_SLIDES.forEach((_, idx) => {
+        const isActive = idx === galleryStartIndex;
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.onclick = () => {
+          galleryStartIndex = idx;
+          renderGallery();
         };
+        dot.className = isActive
+          ? 'h-2 w-8 rounded-full bg-navy-800 transition-all cursor-pointer'
+          : 'h-2 w-2 rounded-full bg-blue-200 hover:bg-blue-400 transition-all cursor-pointer';
+        dot.setAttribute('aria-label', `Ke Slide ${idx + 1}`);
+        dots.appendChild(dot);
+      });
+    }
 
-        async function initYouTubeStreamEmbed() {
-            const wrapper = document.getElementById('ytPlayerWrapper');
-            const statusLabel = document.getElementById('ytStatusLabel');
-            const liveDot = document.getElementById('ytLiveDot');
+    function prevGalleryPage() {
+      galleryStartIndex = (galleryStartIndex - 1 + GALLERY_SLIDES.length) % GALLERY_SLIDES.length;
+      renderGallery();
+    }
 
-            const channelId = YT_CONFIG.CHANNEL_ID.trim();
-            const fallbackVideoId = YT_CONFIG.FALLBACK_VIDEO_ID.trim();
+    function nextGalleryPage() {
+      galleryStartIndex = (galleryStartIndex + 1) % GALLERY_SLIDES.length;
+      renderGallery();
+    }
 
-            function renderFacadeOrIframe(embedUrl, titleText, isLive, videoIdForThumb = '') {
-                statusLabel.textContent = isLive ? '🔴 SEDANG LIVE SEKARANG' : '🎬 STREAM / VIDEO TERAKHIR';
-                if (!isLive && liveDot) {
-                    liveDot.innerHTML = '<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-400"></span>';
-                }
+    // Lightbox Functions
+    function openLightbox(index) {
+      currentSlideIndex = index;
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      updateLightboxView();
+    }
 
-                if (videoIdForThumb) {
-                    const thumbUrl = `https://i.ytimg.com/vi/${videoIdForThumb}/hqdefault.jpg`;
-                    wrapper.innerHTML = `
-                        <button type="button" 
-                                aria-label="Putar Video YouTube"
-                                class="group relative w-full h-full block text-left focus:outline-none"
-                                onclick="this.outerHTML='<iframe src=\\'${embedUrl}&autoplay=1\\' title=\\'YouTube Player\\' allow=\\'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\\' allowfullscreen></iframe>'">
-                            <img src="${thumbUrl}" 
-                                 alt="${titleText}" 
-                                 loading="lazy"
-                                 class="w-full h-full object-cover brightness-90 group-hover:brightness-100 group-hover:scale-[1.02] transition-all duration-300">
-                            <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/25 to-transparent"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-14 h-14 rounded-full bg-sky-500/95 text-navy-950 flex items-center justify-center shadow-[0_0_25px_rgba(56,189,248,0.65)] group-hover:scale-110 transition-transform">
-                                    <svg class="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                </div>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 right-3">
-                                <p class="font-gaming text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow">${titleText}</p>
-                            </div>
-                        </button>
-                    `;
-                    return;
-                }
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
 
-                wrapper.innerHTML = `
-                    <iframe src="${embedUrl}" 
-                            title="${titleText}" 
-                            loading="lazy"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
-                    </iframe>
-                `;
-            }
+    function changeLightboxSlide(delta) {
+      currentSlideIndex = (currentSlideIndex + delta + GALLERY_SLIDES.length) % GALLERY_SLIDES.length;
+      updateLightboxView();
+    }
 
-            if (!channelId && fallbackVideoId) {
-                renderFacadeOrIframe(
-                    `https://www.youtube-nocookie.com/embed/${fallbackVideoId}?rel=0`,
-                    'Tonton Stream Terakhir @iniioinkk',
-                    false,
-                    fallbackVideoId
-                );
-                return;
-            }
+    function updateLightboxView() {
+      const img = document.getElementById('lightboxImg');
+      const counter = document.getElementById('lightboxCounter');
+      const thumbs = document.getElementById('lightboxThumbs');
+      const active = GALLERY_SLIDES[currentSlideIndex];
 
-            if (channelId) {
-                let latestVideoId = fallbackVideoId;
-                let latestTitle = 'Oink Gaming (@iniioinkk) Stream';
+      img.src = active.url;
+      img.alt = `Galeri Oink ${active.label}`;
+      counter.textContent = `Slide ${currentSlideIndex + 1} / ${GALLERY_SLIDES.length}`;
 
-                try {
-                    const rssUrl = encodeURIComponent(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
-                    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.status === 'ok' && data.items && data.items.length > 0) {
-                            const latestItem = data.items[0];
-                            latestTitle = latestItem.title || latestTitle;
-                            const match = (latestItem.link || '').match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
-                            if (match && match[1]) {
-                                latestVideoId = match[1];
-                            }
-                        }
-                    }
-                } catch (e) {
-                    // Abaikan error jaringan RSS
-                }
+      thumbs.innerHTML = '';
+      GALLERY_SLIDES.forEach((slide, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => {
+          currentSlideIndex = idx;
+          updateLightboxView();
+        };
+        btn.className = `w-12 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+          idx === currentSlideIndex ? 'border-blue-400 scale-105 opacity-100' : 'border-transparent opacity-55 hover:opacity-90'
+        }`;
+        btn.innerHTML = `<img src="${slide.url}" alt="${slide.label}" class="w-full h-full object-cover" />`;
+        thumbs.appendChild(btn);
+      });
+    }
 
-                if (latestVideoId) {
-                    renderFacadeOrIframe(
-                        `https://www.youtube-nocookie.com/embed/${latestVideoId}?rel=0`,
-                        latestTitle,
-                        false,
-                        latestVideoId
-                    );
-                } else {
-                    renderFacadeOrIframe(
-                        `https://www.youtube-nocookie.com/embed/live_stream?channel=${channelId}&rel=0`,
-                        'Oink Gaming Live Stream',
-                        true
-                    );
-                }
-            }
-        }
+    // Touch swipe support inside Lightbox
+    let touchStartX = 0;
+    const lightboxModal = document.getElementById('lightboxModal');
+    lightboxModal.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    lightboxModal.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 45) {
+        changeLightboxSlide(diff > 0 ? -1 : 1);
+      }
+    }, { passive: true });
 
-        window.addEventListener('DOMContentLoaded', initYouTubeStreamEmbed);
-    </script>
+    // =========================================================================
+    // 6. ALL LINKS DRAWER & REAL-TIME SEARCH FILTER
+    // =========================================================================
+    function renderAllLinksDrawer() {
+      const container = document.getElementById('allLinksList');
+      container.innerHTML = '';
+      ALL_LINKS.forEach((item) => {
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'flex items-center gap-3.5 p-3 rounded-2xl bg-navy-800/80 hover:bg-navy-700 border border-blue-400/15 hover:border-blue-400/40 transition-all group';
+        a.innerHTML = `
+          <div class="w-10 h-10 rounded-xl ${item.color} flex items-center justify-center shrink-0 text-base">
+            <i class="${item.icon}"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold text-white group-hover:text-blue-200 transition-colors">${item.name}</p>
+            <p class="text-xs text-blue-200/70 truncate">${item.desc}</p>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-blue-300/60 group-hover:text-blue-200"></i>
+        `;
+        container.appendChild(a);
+      });
+    }
+
+    function toggleLinksDrawer(open) {
+      const modal = document.getElementById('linksDrawerModal');
+      if (open) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Real-time search filter for social/gaming links
+    const searchInput = document.getElementById('linkSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchEmptyState = document.getElementById('searchEmptyState');
+
+    function filterLinks() {
+      const q = searchInput.value.trim().toLowerCase();
+      clearSearchBtn.classList.toggle('hidden', q.length === 0);
+
+      const items = document.querySelectorAll('[data-link-item]');
+      let visibleCount = 0;
+
+      items.forEach((el) => {
+        const keywords = (el.getAttribute('data-keywords') || '').toLowerCase();
+        const text = el.textContent.toLowerCase();
+        const match = !q || keywords.includes(q) || text.includes(q);
+        el.classList.toggle('hidden', !match);
+        if (match) visibleCount++;
+      });
+
+      searchEmptyState.classList.toggle('hidden', visibleCount > 0);
+    }
+
+    function clearSearch() {
+      searchInput.value = '';
+      filterLinks();
+      searchInput.focus();
+    }
+
+    function scrollToTopAndReset() {
+      clearSearch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Kembali ke beranda Oink!');
+    }
+
+    searchInput.addEventListener('input', filterLinks);
+
+    // Keyboard shortcuts (Escape closes modals, Left/Right navigates lightbox)
+    document.addEventListener('keydown', (e) => {
+      const isLightboxOpen = !document.getElementById('lightboxModal').classList.contains('hidden');
+      const isDrawerOpen = !document.getElementById('linksDrawerModal').classList.contains('hidden');
+
+      if (e.key === 'Escape') {
+        if (isLightboxOpen) closeLightbox();
+        if (isDrawerOpen) toggleLinksDrawer(false);
+      } else if (isLightboxOpen && e.key === 'ArrowRight') {
+        changeLightboxSlide(1);
+      } else if (isLightboxOpen && e.key === 'ArrowLeft') {
+        changeLightboxSlide(-1);
+      }
+    });
+
+    // Close modals when clicking backdrop
+    document.getElementById('linksDrawerModal').addEventListener('click', (e) => {
+      if (e.target.id === 'linksDrawerModal') toggleLinksDrawer(false);
+    });
+    document.getElementById('lightboxModal').addEventListener('click', (e) => {
+      if (e.target.id === 'lightboxModal') closeLightbox();
+    });
+
+    // =========================================================================
+    // 7. INITIALIZE ON LOAD
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 15000);
+      initWaveform();
+      renderGallery();
+      renderAllLinksDrawer();
+    });
+  </script>
 </body>
 </html>
