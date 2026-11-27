@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Oink Squish Lab (@iniioinkk) — Fullscreen Jelly</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6.5.2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['"Fredoka"', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =====================================================================
+       1. FULL-VIEWPORT CANVAS STAGE (TANPA FRAME / BORDER)
+       ===================================================================== */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050a18;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Kanvas memenuhi 100% layar tanpa kotak bingkai */
+    #gameStage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      cursor: none;
+      touch-action: none;
+      z-index: 1;
+    }
+
+    #squishCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* =====================================================================
+       2. IPHONE / IOS LIQUID GLASS FLOATING UI
+       ===================================================================== */
+    .ios-glass {
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.20) 0%,
+        rgba(255, 255, 255, 0.09) 100%
+      );
+      backdrop-filter: blur(26px) saturate(190%);
+      -webkit-backdrop-filter: blur(26px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.45);
+    }
+
+    .ios-glass-dark {
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.46) 0%,
+        rgba(15, 23, 42, 0.28) 100%
+      );
+      backdrop-filter: blur(28px) saturate(195%);
+      -webkit-backdrop-filter: blur(28px) saturate(195%);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.38);
+    }
+
+    .ios-btn {
+      transition: transform 0.14s cubic-bezier(0.22, 1.4, 0.36, 1), background-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .ios-btn:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+    }
+    .ios-btn:active {
+      transform: scale(0.91);
+    }
+
+    .ios-btn-accent {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(235, 244, 255, 0.88) 100%);
+      color: #09132c;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), inset 0 1px 0 #ffffff;
+      transition: transform 0.14s cubic-bezier(0.22, 1.4, 0.36, 1), filter 0.15s ease;
+    }
+    .ios-btn-accent:hover {
+      filter: brightness(1.04);
+    }
+    .ios-btn-accent:active {
+      transform: scale(0.92);
+    }
+
+    /* =====================================================================
+       3. KURSOR TANGAN KUSTOM
+       ===================================================================== */
+    #customHandCursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.12s ease;
+      will-change: transform, left, top;
+      filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.55));
+    }
+
+    #handInner {
+      transition: transform 0.1s cubic-bezier(0.22, 1.4, 0.36, 1);
+      transform-origin: 45% 45%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio BGM Opsional -->
+  <audio id="bgAudio" src="https://files.catbox.moe/soz2fe.ogg" loop preload="metadata"></audio>
+
+  <!-- =====================================================================
+       KURSOR TANGAN KUSTOM (Mengikuti pointer/sentuhan di atas foto)
+       ===================================================================== -->
+  <div id="customHandCursor" class="opacity-0" aria-hidden="true">
+    <div id="handInner" class="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
+      <!-- Tangan Terbuka -->
+      <svg id="handOpenSvg" class="w-14 h-14 sm:w-16 sm:h-16 transition-opacity duration-75" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="34" r="24" fill="#FFFFFF" fill-opacity="0.24"/>
+        <path d="M22 30V15C22 12.7909 23.7909 11 26 11C28.2091 11 30 12.7909 30 15V26H31V12C31 9.79086 32.7909 8 35 8C37.2091 8 39 9.79086 39 12V26H40V15C40 12.7909 41.7909 11 44 11C46.2091 11 48 12.7909 48 15V34C48 45.0457 39.5 53 29 53C21.5 53 16 48 13.5 41.5L10.5 34C9.6 31.8 10.7 29.3 12.9 28.5C15.1 27.7 17.5 28.8 18.4 31L20 35H22V30Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+        <rect x="24" y="37" width="14" height="5" rx="2.5" fill="#3B82F6"/>
+      </svg>
+
+      <!-- Tangan Mencubit / Menekan -->
+      <svg id="handSquishSvg" class="w-14 h-14 sm:w-16 sm:h-16 absolute inset-0 m-auto opacity-0 scale-90 transition-all duration-75" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 16L18 21M52 16L46 21M32 6V13" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+        <path d="M17 28C17 24.5 19.8 22 23 22C24.5 22 25.8 22.6 26.8 23.5C27.8 21.5 29.8 20 32.2 20C34.6 20 36.6 21.5 37.6 23.5C38.6 22.6 39.9 22 41.4 22C44.6 22 47.4 24.5 47.4 28V37C47.4 46.5 40 53 31 53C22.5 53 16 47.5 14 40L12.5 34.5C11.8 32 13.5 29.6 16 29.6H17V28Z" fill="#EFF6FF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+        <path d="M23 35C26 37.5 36 37.5 39 35" stroke="#2563EB" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       STAGE 1: FULLSCREEN INTERACTIVE PHOTO CANVAS (TANPA FRAME)
+       ===================================================================== -->
+  <main id="gameStage" aria-label="Kanvas Foto Interaktif Fullscreen">
+    <canvas id="squishCanvas"></canvas>
+
+    <!-- Loading Overlay Glass Halus -->
+    <div id="canvasLoader" class="pointer-events-none fixed inset-0 z-20 flex items-center justify-center bg-slate-950/45 backdrop-blur-md transition-opacity duration-300">
+      <div class="ios-glass-dark px-5 py-3 rounded-full flex items-center gap-2.5 text-xs font-semibold text-white">
+        <i class="fa-solid fa-spinner fa-spin text-sky-300"></i>
+        <span>Memuat Foto...</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       STAGE 2: TOP FLOATING IOS GLASS BAR (DYNAMIC ISLAND STYLE)
+       ===================================================================== -->
+  <header class="pointer-events-none fixed top-0 inset-x-0 z-30 flex items-center justify-between px-3.5 sm:px-6 pt-[max(14px,env(safe-area-inset-top))]">
+    <!-- Kiri: Tombol Kembali + Logo Oink -->
+    <div class="pointer-events-auto ios-glass-dark h-10 pl-1.5 pr-3.5 rounded-full flex items-center gap-2.5">
+      <a href="index.html" title="Kembali" class="ios-btn w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white" aria-label="Kembali">
+        <i class="fa-solid fa-chevron-left text-[11px]"></i>
+      </a>
+      <img
+        src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0"
+        alt="Logo Oink"
+        class="h-5 w-auto object-contain"
+        onerror="this.style.display='none'"
+      />
+      <span id="slideBadge" class="text-[11px] font-bold tracking-wider text-white/90 tabular-nums border-l border-white/20 pl-2">
+        1 / 8
+      </span>
+    </div>
+
+    <!-- Kanan: Counter Squish + Toggle SFX & BGM -->
+    <div class="pointer-events-auto ios-glass-dark h-10 px-2 rounded-full flex items-center gap-1">
+      <div class="px-2.5 flex items-center gap-1.5 text-[11px] font-bold text-white tabular-nums" title="Total Squish">
+        <i class="fa-solid fa-sparkles text-amber-300 text-[10px]"></i>
+        <span id="squishCounter">0</span>
+      </div>
+
+      <button id="sfxBtn" onclick="toggleSfx()" title="Suara Efek Boing" class="ios-btn w-7 h-7 rounded-full bg-white/15 text-white flex items-center justify-center cursor-pointer" aria-label="Toggle Efek Suara">
+        <i id="sfxIcon" class="fa-solid fa-volume-high text-[11px]"></i>
+      </button>
+
+      <button id="bgmBtn" onclick="toggleBgm()" title="Musik Latar Oink" class="ios-btn w-7 h-7 rounded-full text-white/75 flex items-center justify-center cursor-pointer" aria-label="Toggle Musik Latar">
+        <i class="fa-solid fa-music text-[11px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       STAGE 3: BOTTOM FLOATING IPHONE GLASS DOCK
+       ===================================================================== -->
+  <footer class="pointer-events-none fixed bottom-0 inset-x-0 z-30 flex flex-col items-center gap-2 px-3.5 pb-[max(10px,env(safe-area-inset-bottom))]">
+
+    <!-- Petunjuk Singkat Melayang (Otomatis hilang setelah sentuhan pertama) -->
+    <div id="floatingHint" class="ios-glass-dark px-3.5 py-1 rounded-full text-[11px] font-medium text-white/90 tracking-wide transition-opacity duration-500">
+      <i class="fa-solid fa-hand-pointer text-sky-300 mr-1.5"></i>Sentuh, cubit, atau tarik layar!
+    </div>
+
+    <!-- Kapsul Kontrol Utama iOS Liquid Glass -->
+    <div class="pointer-events-auto ios-glass-dark w-full max-w-[430px] p-1.5 rounded-[2rem] flex flex-col gap-1.5">
+
+      <!-- Baris 1: Prev | Dots & Mode Lentur | Squish | Next -->
+      <div class="flex items-center justify-between gap-1.5">
+        <!-- Prev -->
+        <button onclick="prevImage()" class="ios-btn h-10 px-3.5 rounded-full bg-white/10 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shrink-0" aria-label="Foto Sebelumnya">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
+          <span>Prev</span>
+        </button>
+
+        <!-- Tengah: Indikator Dots + Selector Kelenturan Ringkas -->
+        <div class="flex flex-col items-center justify-center min-w-0 flex-1">
+          <!-- Mode Kelenturan Segmented iOS Pill -->
+          <div class="flex items-center bg-black/25 p-0.5 rounded-full border border-white/10 text-[10px] font-bold">
+            <button type="button" data-jelly="soft" onclick="setJellyMode('soft')" class="jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer">
+              Soft
+            </button>
+            <button type="button" data-jelly="bouncy" onclick="setJellyMode('bouncy')" class="jelly-btn px-2.5 py-0.5 rounded-full bg-white/25 text-white shadow-xs transition-all cursor-pointer">
+              Bouncy
+            </button>
+            <button type="button" data-jelly="mega" onclick="setJellyMode('mega')" class="jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer">
+              Jelly
+            </button>
+          </div>
+
+          <!-- Dots Slide -->
+          <div id="miniDots" class="flex items-center gap-1 mt-1.5"></div>
+        </div>
+
+        <!-- Kanan: Tombol Squish + Next Gambar -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="triggerRandomSquish()" title="Squish!" class="ios-btn w-10 h-10 rounded-full bg-white/12 text-amber-300 flex items-center justify-center cursor-pointer" aria-label="Squish Acak">
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+          </button>
+
+          <button onclick="nextImage()" class="ios-btn-accent h-10 px-4 rounded-full text-xs font-extrabold flex items-center gap-1.5 cursor-pointer" aria-label="Next Gambar">
+            <span>Next</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- iPhone Home Indicator Bar -->
+    <div class="w-32 h-1 rounded-full bg-white/45 mt-0.5 shadow-xs" aria-hidden="true"></div>
+  </footer>
+
+  <!-- =====================================================================
+       JAVASCRIPT: KONFIGURASI FOTO 4:3 + FISIKA JELLY FULLSCREEN
+       ===================================================================== -->
+  <script>
+    /* =====================================================================
+       [PANDUAN GANTI FOTO 4:3]
+       Cukup ganti link URL di dalam daftar PHOTO_SLIDES di bawah ini.
+       - Kamu bisa langsung tempel URL gambar biasa (https://... .jpg / .png / .webp)
+       - Atau tempel Google Drive File ID menggunakan helper driveUrl('ID_FILE')
+       - Semua foto otomatis dipetakan dalam rasio 4:3 full-screen tanpa terpotong aneh.
+       ===================================================================== */
+    function driveUrl(fileId) {
+      return [
+        `https://lh3.googleusercontent.com/d/${fileId}=s0`,
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`
+      ];
+    }
+
+    const PHOTO_SLIDES = [
+      // Foto 1 (Rasio 4:3)
+      {
+        title: 'Foto 1',
+        src: driveUrl('1vwGDH9S4f2voV7hsvjsZaHx80Uze_9OG')
+      },
+      // Foto 2 (Rasio 4:3)
+      {
+        title: 'Foto 2',
+        src: driveUrl('1UUEQnQACOukpOacZ74Q_C5oPRFucsNeu')
+      },
+      // Foto 3 (Rasio 4:3)
+      {
+        title: 'Foto 3',
+        src: driveUrl('1PJDQAzJ0Li9GgCnbk0a55v8yjfVEECNb')
+      },
+      // Foto 4 (Rasio 4:3)
+      {
+        title: 'Foto 4',
+        src: driveUrl('1NVb6uOK9W6djoLTfx52mE0M7h1MCWx6E')
+      },
+      // Foto 5 (Rasio 4:3)
+      {
+        title: 'Foto 5',
+        src: driveUrl('1qa8PXAyVTBsuIwlR20XCaO9NEP9kf8NM')
+      },
+      // Foto 6 (Rasio 4:3)
+      {
+        title: 'Foto 6',
+        src: driveUrl('1obWE7fsYnGB6GoqyPjvth4LCapdkPc-v')
+      },
+      // Foto 7 (Rasio 4:3)
+      {
+        title: 'Foto 7',
+        src: driveUrl('1j52qCENE5LF-Qa7mb-WoTwJdYmGm4UvC')
+      },
+      // Foto 8 (Rasio 4:3)
+      {
+        title: 'Foto 8',
+        src: driveUrl('1gmQCc-7YybEdH2gRRCJsDzN2w6tTfsZ0')
+      }
+    ];
+
+    /* =====================================================================
+       INISIALISASI VARIABEL & STATE GAME
+       ===================================================================== */
+    const TARGET_PHOTO_RATIO = 4 / 3; // Rasio foto 4:3
+    let currentSlideIdx = 0;
+    const imageCache = new Map();
+
+    const canvas = document.getElementById('squishCanvas');
+    const ctx = canvas.getContext('2d');
+    const gameStage = document.getElementById('gameStage');
+    const canvasLoader = document.getElementById('canvasLoader');
+
+    // Grid titik kelenturan (22 kolom x 17 baris = proporsi 4:3 halus)
+    const COLS = 22;
+    const ROWS = 17;
+
+    const JELLY_PRESETS = {
+      soft:   { stiffness: 0.088, damping: 0.86, radius: 190, force: 0.62 },
+      bouncy: { stiffness: 0.060, damping: 0.908, radius: 220, force: 0.88 },
+      mega:   { stiffness: 0.038, damping: 0.942, radius: 260, force: 1.18 }
+    };
+
+    let currentJelly = JELLY_PRESETS.bouncy;
+    let meshPoints = [];
+    let particles = [];
+    let activeImage = null;
+    let viewW = window.innerWidth;
+    let viewH = window.innerHeight;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let squishCount = 0;
+
+    let pointer = {
+      x: 0,
+      y: 0,
+      prevX: 0,
+      prevY: 0,
+      isDown: false,
+      inside: false
+    };
+
+    /* =====================================================================
+       EFEK SUARA BOING & MUSIK LATAR
+       ===================================================================== */
+    let sfxEnabled = true;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSquishSound(intensity = 1) {
+      if (!sfxEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        const baseFreq = 220 + Math.random() * 80;
+        const peakFreq = baseFreq * (1.55 + Math.min(intensity, 1.5) * 0.35);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(peakFreq, now + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.88, now + 0.22);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.16, now + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } catch (e) {}
+    }
+
+    function playSwitchSound() {
+      if (!sfxEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(390, now);
+        osc.frequency.exponentialRampToValueAtTime(580, now + 0.08);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } catch (e) {}
+    }
+
+    function toggleSfx() {
+      sfxEnabled = !sfxEnabled;
+      const icon = document.getElementById('sfxIcon');
+      const btn = document.getElementById('sfxBtn');
+      if (sfxEnabled) {
+        icon.className = 'fa-solid fa-volume-high text-[11px]';
+        btn.classList.add('bg-white/15');
+        playSquishSound(0.8);
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark text-[11px] opacity-60';
+        btn.classList.remove('bg-white/15');
+      }
+    }
+
+    const bgAudio = document.getElementById('bgAudio');
+    function toggleBgm() {
+      const btn = document.getElementById('bgmBtn');
+      if (bgAudio.paused) {
+        bgAudio.volume = 0.45;
+        bgAudio.play().then(() => {
+          btn.classList.add('bg-white/25', 'text-white');
+          btn.classList.remove('text-white/75');
+        }).catch(() => {});
+      } else {
+        bgAudio.pause();
+        btn.classList.remove('bg-white/25', 'text-white');
+        btn.classList.add('text-white/75');
+      }
+    }
+
+    /* =====================================================================
+       MESH FISIKA KELENTURAN FULLSCREEN (4:3 EDGE-TO-EDGE)
+       ===================================================================== */
+    function setJellyMode(mode) {
+      if (!JELLY_PRESETS[mode]) return;
+      currentJelly = JELLY_PRESETS[mode];
+
+      document.querySelectorAll('.jelly-btn').forEach(btn => {
+        const isActive = btn.getAttribute('data-jelly') === mode;
+        btn.className = isActive
+          ? 'jelly-btn px-2.5 py-0.5 rounded-full bg-white/25 text-white shadow-xs transition-all cursor-pointer'
+          : 'jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer';
+      });
+
+      triggerRandomSquish();
+    }
+
+    function initMesh() {
+      meshPoints = [];
+      // Sedikit bleed (-12px) di tepi layar agar saat layar dipencet ke dalam tidak muncul celah hitam di pinggir
+      const bleed = 14;
+      const startX = -bleed;
+      const startY = -bleed;
+      const totalW = viewW + bleed * 2;
+      const totalH = viewH + bleed * 2;
+
+      for (let r = 0; r <= ROWS; r++) {
+        const rowArr = [];
+        for (let c = 0; c <= COLS; c++) {
+          const u = c / COLS;
+          const v = r / ROWS;
+          const homeX = startX + u * totalW;
+          const homeY = startY + v * totalH;
+
+          // Tepi terluar dipaku lebih kuat agar foto tetap memenuhi layar penuh
+          const isEdge = r === 0 || r === ROWS || c === 0 || c === COLS;
+
+          rowArr.push({
+            x: homeX,
+            y: homeY,
+            homeX,
+            homeY,
+            vx: 0,
+            vy: 0,
+            u,
+            v,
+            pinWeight: isEdge ? 0.12 : 1.0
+          });
+        }
+        meshPoints.push(rowArr);
+      }
+    }
+
+    function resizeCanvas() {
+      viewW = window.innerWidth;
+      viewH = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = viewW * dpr;
+      canvas.height = viewH * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      initMesh();
+    }
+
+    function applySquishImpulse(px, py, dx = 0, dy = 0, strengthMultiplier = 1) {
+      const scaleRef = Math.min(viewW, viewH) / 600;
+      const radius = currentJelly.radius * Math.max(0.75, scaleRef);
+      const force = currentJelly.force * strengthMultiplier;
+
+      for (let r = 0; r <= ROWS; r++) {
+        for (let c = 0; c <= COLS; c++) {
+          const p = meshPoints[r][c];
+          const distX = p.x - px;
+          const distY = p.y - py;
+          const dist = Math.hypot(distX, distY);
+
+          if (dist < radius) {
+            const falloff = Math.pow(1 - dist / radius, 1.5);
+            const angle = Math.atan2(distY, distX);
+            const radialPush = Math.sin(falloff * Math.PI) * 22 * force;
+
+            p.vx += (Math.cos(angle) * radialPush + dx * 0.46 * force) * falloff * p.pinWeight;
+            p.vy += (Math.sin(angle) * radialPush + dy * 0.46 * force) * falloff * p.pinWeight;
+          }
+        }
+      }
+    }
+
+    function spawnSquishParticles(x, y, count = 6) {
+      const shapes = ['heart', 'star', 'bubble'];
+      const colors = ['#ffffff', '#bae6fd', '#60a5fa', '#fde68a'];
+
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.6;
+        const speed = 2.0 + Math.random() * 3.8;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.4,
+          size: 7 + Math.random() * 6,
+          life: 1,
+          decay: 0.022 + Math.random() * 0.015,
+          shape: shapes[Math.floor(Math.random() * shapes.length)],
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function updatePhysics() {
+      const k = currentJelly.stiffness;
+      const damp = currentJelly.damping;
+
+      for (let r = 0; r <= ROWS; r++) {
+        for (let c = 0; c <= COLS; c++) {
+          const p = meshPoints[r][c];
+          let ax = (p.homeX - p.x) * k;
+          let ay = (p.homeY - p.y) * k;
+
+          const neighbors = [
+            r > 0 ? meshPoints[r - 1][c] : null,
+            r < ROWS ? meshPoints[r + 1][c] : null,
+            c > 0 ? meshPoints[r][c - 1] : null,
+            c < COLS ? meshPoints[r][c + 1] : null
+          ];
+
+          for (let i = 0; i < 4; i++) {
+            const n = neighbors[i];
+            if (n) {
+              const restDx = n.homeX - p.homeX;
+              const restDy = n.homeY - p.homeY;
+              const curDx = n.x - p.x;
+              const curDy = n.y - p.y;
+              ax += (curDx - restDx) * (k * 0.45);
+              ay += (curDy - restDy) * (k * 0.45);
+            }
+          }
+
+          p.vx = (p.vx + ax) * damp;
+          p.vy = (p.vy + ay) * damp;
+          p.x += p.vx;
+          p.y += p.vy;
+        }
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.vy += 0.05;
+        pt.rot += 0.06;
+        pt.life -= pt.decay;
+        if (pt.life <= 0) particles.splice(i, 1);
+      }
+    }
+
+    /* =====================================================================
+       TEXTURE MAPPING AFIN DENGAN PEMOTONGAN COVER 4:3 FULLSCREEN
+       ===================================================================== */
+    function getCoverCropRect(imgW, imgH, targetW, targetH) {
+      const imgRatio = imgW / imgH;
+      const viewRatio = targetW / targetH;
+      let sx = 0, sy = 0, sw = imgW, sh = imgH;
+
+      if (imgRatio > viewRatio) {
+        sw = imgH * viewRatio;
+        sx = (imgW - sw) * 0.5;
+      } else {
+        sh = imgW / viewRatio;
+        sy = (imgH - sh) * 0.5;
+      }
+      return { sx, sy, sw, sh };
+    }
+
+    function drawTexturedTriangle(img, crop, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.lineTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.closePath();
+      ctx.clip();
+
+      const su0 = crop.sx + u0 * crop.sw;
+      const sv0 = crop.sy + v0 * crop.sh;
+      const su1 = crop.sx + u1 * crop.sw;
+      const sv1 = crop.sy + v1 * crop.sh;
+      const su2 = crop.sx + u2 * crop.sw;
+      const sv2 = crop.sy + v2 * crop.sh;
+
+      const denom = (su0 * (sv1 - sv2) - sv0 * (su1 - su2) + (su1 * sv2 - su2 * sv1));
+      if (Math.abs(denom) < 0.0001) {
+        ctx.restore();
+        return;
+      }
+
+      const m11 = -(sv0 * (x2 - x1) - sv1 * x2 + sv2 * x1 + (sv1 - sv2) * x0) / denom;
+      const m12 = (sv1 * y2 + sv0 * (y1 - y2) - sv2 * y1 + (sv2 - sv1) * y0) / denom;
+      const m21 = (su0 * (x2 - x1) - su1 * x2 + su2 * x1 + (su1 - su2) * x0) / denom;
+      const m22 = -(su1 * y2 + su0 * (y1 - y2) - su2 * y1 + (su2 - su1) * y0) / denom;
+      const dx = (su0 * (sv2 * x1 - sv1 * x2) + sv0 * (su1 * x2 - su2 * x1) + (su2 * sv1 - su1 * sv2) * x0) / denom;
+      const dy = (su0 * (sv2 * y1 - sv1 * y2) + sv0 * (su1 * y2 - su2 * y1) + (su2 * sv1 - su1 * sv2) * y0) / denom;
+
+      ctx.transform(m11, m12, m21, m22, dx, dy);
+      ctx.drawImage(img, 0, 0);
+      ctx.restore();
+    }
+
+    function renderScene() {
+      ctx.clearRect(0, 0, viewW, viewH);
+
+      if (activeImage && activeImage.complete && activeImage.naturalWidth > 0) {
+        const iw = activeImage.naturalWidth;
+        const ih = activeImage.naturalHeight;
+        const crop = getCoverCropRect(iw, ih, viewW, viewH);
+
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            const p00 = meshPoints[r][c];
+            const p10 = meshPoints[r][c + 1];
+            const p01 = meshPoints[r + 1][c];
+            const p11 = meshPoints[r + 1][c + 1];
+
+            // Overlap mikro (1.012) mencegah garis sambungan halus antar segitiga
+            const cx1 = (p00.x + p10.x + p01.x) / 3;
+            const cy1 = (p00.y + p10.y + p01.y) / 3;
+            const e = 1.012;
+
+            drawTexturedTriangle(
+              activeImage, crop,
+              cx1 + (p00.x - cx1) * e, cy1 + (p00.y - cy1) * e,
+              cx1 + (p10.x - cx1) * e, cy1 + (p10.y - cy1) * e,
+              cx1 + (p01.x - cx1) * e, cy1 + (p01.y - cy1) * e,
+              p00.u, p00.v, p10.u, p10.v, p01.u, p01.v
+            );
+
+            const cx2 = (p10.x + p11.x + p01.x) / 3;
+            const cy2 = (p10.y + p11.y + p01.y) / 3;
+
+            drawTexturedTriangle(
+              activeImage, crop,
+              cx2 + (p10.x - cx2) * e, cy2 + (p10.y - cy2) * e,
+              cx2 + (p11.x - cx2) * e, cy2 + (p11.y - cy2) * e,
+              cx2 + (p01.x - cx2) * e, cy2 + (p01.y - cy2) * e,
+              p10.u, p10.v, p11.u, p11.v, p01.u, p01.v
+            );
+          }
+        }
+      }
+
+      // Render partikel hati/bintang berkilau
+      particles.forEach(pt => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, pt.life);
+        ctx.translate(pt.x, pt.y);
+        ctx.rotate(pt.rot);
+        ctx.fillStyle = pt.color;
+
+        if (pt.shape === 'heart') {
+          const s = pt.size * 0.55;
+          ctx.beginPath();
+          ctx.moveTo(0, s);
+          ctx.bezierCurveTo(-s * 2, -s * 0.6, -s, -s * 2.1, 0, -s * 0.8);
+          ctx.bezierCurveTo(s, -s * 2.1, s * 2, -s * 0.6, 0, s);
+          ctx.fill();
+        } else if (pt.shape === 'star') {
+          const spikes = 4;
+          const outer = pt.size * 0.85;
+          const inner = pt.size * 0.35;
+          ctx.beginPath();
+          for (let i = 0; i < spikes * 2; i++) {
+            const rad = i % 2 === 0 ? outer : inner;
+            const a = (i * Math.PI) / spikes;
+            if (i === 0) ctx.moveTo(Math.cos(a) * rad, Math.sin(a) * rad);
+            else ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
+          }
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, pt.size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+    }
+
+    function animateLoop() {
+      updatePhysics();
+      renderScene();
+      requestAnimationFrame(animateLoop);
+    }
+
+    /* =====================================================================
+       KURSOR TANGAN & INTERAKSI SENTUHAN FULLSCREEN
+       ===================================================================== */
+    const customHand = document.getElementById('customHandCursor');
+    const handInner = document.getElementById('handInner');
+    const handOpenSvg = document.getElementById('handOpenSvg');
+    const handSquishSvg = document.getElementById('handSquishSvg');
+
+    function setHandVisualState(isSquishing) {
+      if (isSquishing) {
+        handInner.style.transform = 'scale(0.84) rotate(-14deg)';
+        handOpenSvg.style.opacity = '0';
+        handSquishSvg.style.opacity = '1';
+        handSquishSvg.style.transform = 'scale(1.06)';
+      } else {
+        handInner.style.transform = 'scale(1) rotate(0deg)';
+        handOpenSvg.style.opacity = '1';
+        handSquishSvg.style.opacity = '0';
+        handSquishSvg.style.transform = 'scale(0.9)';
+      }
+    }
+
+    function registerSquish(x, y, strength = 1) {
+      squishCount++;
+      document.getElementById('squishCounter').textContent = squishCount;
+      spawnSquishParticles(x, y, 6);
+      playSquishSound(strength);
+
+      const hint = document.getElementById('floatingHint');
+      if (hint) hint.style.opacity = '0';
+    }
+
+    function triggerRandomSquish() {
+      const rx = viewW * (0.28 + Math.random() * 0.44);
+      const ry = viewH * (0.28 + Math.random() * 0.44);
+      const rdx = (Math.random() - 0.5) * 42;
+      const rdy = (Math.random() - 0.5) * 42;
+      applySquishImpulse(rx, ry, rdx, rdy, 1.35);
+      registerSquish(rx, ry, 1.2);
+    }
+
+    gameStage.addEventListener('pointerenter', (e) => {
+      pointer.inside = true;
+      customHand.style.left = `${e.clientX}px`;
+      customHand.style.top = `${e.clientY}px`;
+      customHand.style.opacity = '1';
+    });
+
+    gameStage.addEventListener('pointerleave', () => {
+      pointer.inside = false;
+      pointer.isDown = false;
+      customHand.style.opacity = '0';
+      setHandVisualState(false);
+    });
+
+    gameStage.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      gameStage.setPointerCapture(e.pointerId);
+      pointer.isDown = true;
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.prevX = e.clientX;
+      pointer.prevY = e.clientY;
+
+      customHand.style.left = `${e.clientX}px`;
+      customHand.style.top = `${e.clientY}px`;
+      customHand.style.opacity = '1';
+      setHandVisualState(true);
+
+      applySquishImpulse(e.clientX, e.clientY, 0, 12, 1.35);
+      registerSquish(e.clientX, e.clientY, 1.15);
+    });
+
+    gameStage.addEventListener('pointermove', (e) => {
+      customHand.style.left = `${e.clientX}px`;
+      customHand.style.top = `${e.clientY}px`;
+
+      const dx = e.clientX - pointer.prevX;
+      const dy = e.clientY - pointer.prevY;
+
+      if (pointer.isDown) {
+        applySquishImpulse(e.clientX, e.clientY, dx * 1.2, dy * 1.2, 0.78);
+        if (Math.hypot(dx, dy) > 9 && Math.random() < 0.34) {
+          spawnSquishParticles(e.clientX, e.clientY, 2);
+        }
+      } else {
+        const speed = Math.hypot(dx, dy);
+        if (speed > 14) {
+          applySquishImpulse(e.clientX, e.clientY, dx * 0.25, dy * 0.25, 0.32);
+        }
+      }
+
+      pointer.prevX = e.clientX;
+      pointer.prevY = e.clientY;
+    });
+
+    gameStage.addEventListener('pointerup', (e) => {
+      if (pointer.isDown) {
+        pointer.isDown = false;
+        setHandVisualState(false);
+        applySquishImpulse(e.clientX, e.clientY, 0, -8, 0.72);
+      }
+      if (e.pointerType === 'touch') {
+        customHand.style.opacity = '0';
+      }
+    });
+
+    gameStage.addEventListener('pointercancel', () => {
+      pointer.isDown = false;
+      setHandVisualState(false);
+      customHand.style.opacity = '0';
+    });
+
+    /* =====================================================================
+       PEMUAT GAMBAR 4:3 OTOMATIS (MENDUKUNG URL LANGSUNG & ARRAY FALLBACK)
+       ===================================================================== */
+    function normalizeSources(srcField, title) {
+      const list = Array.isArray(srcField) ? [...srcField] : [srcField];
+      list.push(`https://placehold.co/1200x900/0b1429/60a5fa?text=${encodeURIComponent(title || 'Oink 4:3')}`);
+      return list;
+    }
+
+    function loadImageFromSources(sources, attempt = 0) {
+      return new Promise((resolve, reject) => {
+        if (attempt >= sources.length) {
+          reject(new Error('All image sources failed'));
+          return;
+        }
+        const img = new Image();
+        img.referrerPolicy = 'no-referrer';
+        img.onload = () => {
+          if (img.naturalWidth > 0) resolve(img);
+          else loadImageFromSources(sources, attempt + 1).then(resolve).catch(reject);
+        };
+        img.onerror = () => {
+          loadImageFromSources(sources, attempt + 1).then(resolve).catch(reject);
+        };
+        img.src = sources[attempt];
+      });
+    }
+
+    function renderMiniDots() {
+      const container = document.getElementById('miniDots');
+      container.innerHTML = '';
+      PHOTO_SLIDES.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.onclick = () => {
+          playSwitchSound();
+          loadSlideImage(idx);
+        };
+        dot.setAttribute('aria-label', `Foto ${idx + 1}`);
+        dot.className = idx === currentSlideIdx
+          ? 'h-1.5 w-4 rounded-full bg-white transition-all cursor-pointer shadow-xs'
+          : 'h-1.5 w-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all cursor-pointer';
+        container.appendChild(dot);
+      });
+    }
+
+    async function loadSlideImage(index) {
+      currentSlideIdx = (index + PHOTO_SLIDES.length) % PHOTO_SLIDES.length;
+      const slide = PHOTO_SLIDES[currentSlideIdx];
+
+      document.getElementById('slideBadge').textContent = `${currentSlideIdx + 1} / ${PHOTO_SLIDES.length}`;
+      renderMiniDots();
+
+      if (imageCache.has(currentSlideIdx)) {
+        activeImage = imageCache.get(currentSlideIdx);
+        canvasLoader.classList.add('opacity-0');
+        applySquishImpulse(viewW * 0.5, viewH * 0.5, 0, 18, 1.25);
+        return;
+      }
+
+      canvasLoader.classList.remove('opacity-0');
+      try {
+        const sources = normalizeSources(slide.src, slide.title);
+        const loadedImg = await loadImageFromSources(sources);
+        imageCache.set(currentSlideIdx, loadedImg);
+        activeImage = loadedImg;
+        canvasLoader.classList.add('opacity-0');
+        applySquishImpulse(viewW * 0.5, viewH * 0.5, 0, 18, 1.25);
+      } catch (err) {
+        canvasLoader.classList.add('opacity-0');
+      }
+    }
+
+    function nextImage() {
+      playSwitchSound();
+      loadSlideImage(currentSlideIdx + 1);
+    }
+
+    function prevImage() {
+      playSwitchSound();
+      loadSlideImage(currentSlideIdx - 1);
+    }
+
+    function preloadAllSlides() {
+      PHOTO_SLIDES.forEach((slide, idx) => {
+        if (idx === 0) return;
+        const sources = normalizeSources(slide.src, slide.title);
+        loadImageFromSources(sources)
+          .then(img => imageCache.set(idx, img))
+          .catch(() => {});
+      });
+    }
+
+    // Shortcut Keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextImage();
+      else if (e.key === 'ArrowLeft') prevImage();
+      else if (e.key === ' ') {
+        e.preventDefault();
+        triggerRandomSquish();
+      }
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.onload = function () {
+      resizeCanvas();
+      loadSlideImage(0).then(() => preloadAllSlides());
+      animateLoop();
+    };
+  </script>
+</body>
+</html>
