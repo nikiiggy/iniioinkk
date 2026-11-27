@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Oink Squish Lab (@iniioinkk) — Elus & Cubit</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6.5.2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['"Fredoka"', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =====================================================================
+       1. FULL-VIEWPORT CANVAS STAGE
+       ===================================================================== */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050a18;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #gameStage {
+      position: fixed;
+      inset: 0;
+      cursor: none;
+      touch-action: none;
+      z-index: 1;
+    }
+
+    #squishCanvas, #fxCanvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      transition: opacity 0.32s ease;
+    }
+
+    #bgCanvas {
+      position: absolute;
+      inset: -40px;
+      width: calc(100% + 80px);
+      height: calc(100% + 80px);
+      object-fit: cover;
+      filter: blur(28px) brightness(0.45) saturate(120%);
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    #canvasLoader.is-hidden { opacity: 0; visibility: hidden; }
+    #canvasLoader { transition: opacity 0.3s ease, visibility 0.3s; }
+
+    /* =====================================================================
+       2. IPHONE / IOS LIQUID GLASS FLOATING UI
+       ===================================================================== */
+    .ios-glass {
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.20) 0%,
+        rgba(255, 255, 255, 0.09) 100%
+      );
+      backdrop-filter: blur(10px) saturate(150%);
+      -webkit-backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.45);
+    }
+
+    .ios-glass-dark {
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.46) 0%,
+        rgba(15, 23, 42, 0.28) 100%
+      );
+      backdrop-filter: blur(10px) saturate(150%);
+      -webkit-backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.38);
+    }
+
+    .ios-btn {
+      transition: transform 0.14s cubic-bezier(0.22, 1.4, 0.36, 1), background-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .ios-btn:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+    }
+    .ios-btn:active {
+      transform: scale(0.91);
+    }
+
+    .ios-btn-accent {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(235, 244, 255, 0.88) 100%);
+      color: #09132c;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), inset 0 1px 0 #ffffff;
+      transition: transform 0.14s cubic-bezier(0.22, 1.4, 0.36, 1), filter 0.15s ease;
+    }
+    .ios-btn-accent:hover {
+      filter: brightness(1.04);
+    }
+    .ios-btn-accent:active {
+      transform: scale(0.92);
+    }
+
+    /* =====================================================================
+       3. KURSOR TANGAN KUSTOM (UTAMA & KEDUA)
+       ===================================================================== */
+    .custom-hand-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.15s ease;
+      will-change: transform;
+    }
+
+    .hand-anchor {
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+
+    .hand-shadow {
+      position: absolute;
+      left: -28px;
+      top: -20px;
+      width: 56px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+      opacity: 0.6;
+      transform: translate(10px, 24px) scale(1);
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .hand-inner {
+      transition: transform 0.1s cubic-bezier(0.22, 1.4, 0.36, 1);
+      transform-origin: 45% 45%;
+    }
+
+    @keyframes pulseRing {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.85; }
+      50% { transform: translate(-50%, -50%) scale(1.12); opacity: 0.4; }
+    }
+    .placement-ring {
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border-radius: 9999px;
+      border: 2px dashed #38bdf8;
+      background: rgba(56, 189, 248, 0.14);
+      animation: pulseRing 1.2s infinite ease-in-out;
+    }
+
+    /* Sembunyikan kursor tangan sepenuhnya pada perangkat layar sentuh / HP */
+    @media (hover: none) and (pointer: coarse) {
+      #customHandCursor,
+      #secondHandCursor {
+        display: none !important;
+      }
+      #gameStage {
+        cursor: default;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio BGM Opsional -->
+  <audio id="bgAudio" src="https://files.catbox.moe/soz2fe.ogg" loop preload="none"></audio>
+
+  <!-- =====================================================================
+       KURSOR TANGAN UTAMA
+       ===================================================================== -->
+  <div id="customHandCursor" class="custom-hand-cursor opacity-0" aria-hidden="true">
+    <div id="handShadow" class="hand-shadow"></div>
+    <div class="hand-anchor">
+      <div id="handInner" class="hand-inner relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center">
+        <!-- Tangan Terbuka (Elus) -->
+        <svg id="handOpenSvg" class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="34" r="24" fill="#FFFFFF" fill-opacity="0.24"/>
+          <path d="M22 30V15C22 12.7909 23.7909 11 26 11C28.2091 11 30 12.7909 30 15V26H31V12C31 9.79086 32.7909 8 35 8C37.2091 8 39 9.79086 39 12V26H40V15C40 12.7909 41.7909 11 44 11C46.2091 11 48 12.7909 48 15V34C48 45.0457 39.5 53 29 53C21.5 53 16 48 13.5 41.5L10.5 34C9.6 31.8 10.7 29.3 12.9 28.5C15.1 27.7 17.5 28.8 18.4 31L20 35H22V30Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+          <rect x="24" y="37" width="14" height="5" rx="2.5" fill="#3B82F6"/>
+        </svg>
+
+        <!-- Tangan Mencubit (Mode Cubit) -->
+        <svg id="handPinchSvg" class="hidden w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="22" fill="#F472B6" fill-opacity="0.22"/>
+          <path d="M27 14C27 11.8 28.8 10 31 10C33.2 10 35 11.8 35 14V25C36.8 24.4 38.8 25.2 39.5 27L42 26.5C44.1 26 46.2 27.3 46.6 29.4L48.2 37.5C49.6 44.5 44.3 51 37.2 51H28C21.5 51 16.5 46 16.5 39.5V34C16.5 31.8 18.3 30 20.5 30H26.5L22.5 24.5C21.2 22.7 21.6 20.2 23.4 18.9C24.5 18.1 25.8 18 27 18.4V14Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+          <circle cx="29" cy="24" r="3.5" fill="#EC4899"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       KURSOR TANGAN KEDUA (DUAL HAND - CERMIN / MIRROR)
+       ===================================================================== -->
+  <div id="secondHandCursor" class="custom-hand-cursor opacity-0" aria-hidden="true">
+    <div id="secondHandShadow" class="hand-shadow"></div>
+    <div id="secondPlacementRing" class="placement-ring hidden"></div>
+    <div class="hand-anchor">
+      <div id="secondHandInner" class="hand-inner relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center" style="transform: scaleX(-1);">
+        <!-- Tangan Kedua Terbuka (Mirror) -->
+        <svg id="secondHandOpenSvg" class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="34" r="24" fill="#38BDF8" fill-opacity="0.22"/>
+          <path d="M22 30V15C22 12.7909 23.7909 11 26 11C28.2091 11 30 12.7909 30 15V26H31V12C31 9.79086 32.7909 8 35 8C37.2091 8 39 9.79086 39 12V26H40V15C40 12.7909 41.7909 11 44 11C46.2091 11 48 12.7909 48 15V34C48 45.0457 39.5 53 29 53C21.5 53 16 48 13.5 41.5L10.5 34C9.6 31.8 10.7 29.3 12.9 28.5C15.1 27.7 17.5 28.8 18.4 31L20 35H22V30Z" fill="#F0F9FF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+          <rect x="24" y="37" width="14" height="5" rx="2.5" fill="#0EA5E9"/>
+        </svg>
+
+        <!-- Tangan Kedua Mencubit -->
+        <svg id="secondHandPinchSvg" class="hidden w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="22" fill="#38BDF8" fill-opacity="0.24"/>
+          <path d="M27 14C27 11.8 28.8 10 31 10C33.2 10 35 11.8 35 14V25C36.8 24.4 38.8 25.2 39.5 27L42 26.5C44.1 26 46.2 27.3 46.6 29.4L48.2 37.5C49.6 44.5 44.3 51 37.2 51H28C21.5 51 16.5 46 16.5 39.5V34C16.5 31.8 18.3 30 20.5 30H26.5L22.5 24.5C21.2 22.7 21.6 20.2 23.4 18.9C24.5 18.1 25.8 18 27 18.4V14Z" fill="#F0F9FF" stroke="#0F172A" stroke-width="3.2" stroke-linejoin="round"/>
+          <circle cx="29" cy="24" r="3.5" fill="#0284C7"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       STAGE 1: FULLSCREEN INTERACTIVE PHOTO CANVAS
+       ===================================================================== -->
+  <main id="gameStage" aria-label="Kanvas Foto Interaktif Fullscreen">
+    <canvas id="bgCanvas" width="48" height="64" aria-hidden="true"></canvas>
+    <canvas id="squishCanvas"></canvas>
+    <canvas id="fxCanvas"></canvas>
+
+    <!-- Loading Overlay Glass Halus -->
+    <div id="canvasLoader" class="pointer-events-none fixed inset-0 z-20 flex items-center justify-center bg-slate-950/45">
+      <div class="ios-glass-dark px-5 py-3 rounded-full flex items-center gap-2.5 text-xs font-semibold text-white">
+        <i class="fa-solid fa-spinner fa-spin text-sky-300"></i>
+        <span>Memuat Foto...</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       STAGE 2: TOP FLOATING IOS GLASS BAR
+       ===================================================================== -->
+  <header class="pointer-events-none fixed top-0 inset-x-0 z-30 flex items-center justify-between px-3.5 sm:px-6 pt-[max(14px,env(safe-area-inset-top))]">
+    <!-- Kiri: Tombol Kembali + Logo Oink -->
+    <div class="pointer-events-auto ios-glass-dark h-10 pl-1.5 pr-3.5 rounded-full flex items-center gap-2.5">
+      <a href="index.html" title="Kembali" class="ios-btn w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white" aria-label="Kembali">
+        <i class="fa-solid fa-chevron-left text-[11px]"></i>
+      </a>
+      <img
+        src="https://lh3.googleusercontent.com/d/1AQTQUsWF4sw5VZ1BZhDKrfs95CfRwhNr=s0"
+        alt="Logo Oink"
+        class="h-5 w-auto object-contain"
+        onerror="this.style.display='none'"
+      />
+      <span id="slideBadge" class="text-[11px] font-bold tracking-wider text-white/90 tabular-nums border-l border-white/20 pl-2">
+        1 / 12
+      </span>
+    </div>
+
+    <!-- Kanan: Counter Squish + Toggle SFX & BGM -->
+    <div class="pointer-events-auto ios-glass-dark h-10 px-2 rounded-full flex items-center gap-1">
+      <div class="px-2.5 flex items-center gap-1.5 text-[11px] font-bold text-white tabular-nums" title="Total Sentuhan">
+        <i class="fa-solid fa-sparkles text-amber-300 text-[10px]"></i>
+        <span id="strokeCounter">0</span>
+      </div>
+
+      <button id="sfxBtn" onclick="toggleSfx()" title="Suara Elusan" class="ios-btn w-7 h-7 rounded-full bg-white/15 text-white flex items-center justify-center cursor-pointer" aria-label="Toggle Efek Suara">
+        <i id="sfxIcon" class="fa-solid fa-volume-high text-[11px]"></i>
+      </button>
+
+      <button id="bgmBtn" onclick="toggleBgm()" title="Musik Latar Oink" class="ios-btn w-7 h-7 rounded-full text-white/75 flex items-center justify-center cursor-pointer" aria-label="Toggle Musik Latar">
+        <i class="fa-solid fa-music text-[11px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       STAGE 3: BOTTOM FLOATING IPHONE GLASS DOCK
+       ===================================================================== -->
+  <footer class="pointer-events-none fixed bottom-0 inset-x-0 z-30 flex flex-col items-center gap-2 px-3.5 pb-[max(10px,env(safe-area-inset-bottom))]">
+
+    <!-- Pesan jika foto gagal dimuat -->
+    <div id="loadError" hidden class="pointer-events-auto ios-glass-dark max-w-[430px] px-4 py-2.5 rounded-2xl text-[11px] text-center text-white/90">
+      Foto gagal dimuat. Cek internet, dan pastikan akses file di Drive "Siapa saja yang memiliki link".
+      <button type="button" onclick="retryImage()" class="ml-1 font-extrabold text-sky-300 underline cursor-pointer">Coba lagi</button>
+    </div>
+
+    <!-- Petunjuk Singkat Melayang -->
+    <div id="floatingHint" class="ios-glass-dark px-3.5 py-1 rounded-full text-[11px] font-medium text-white/90 tracking-wide transition-opacity duration-300">
+      <i class="fa-solid fa-hand-pointer text-sky-300 mr-1.5"></i><span>Elus atau cubit pelan-pelan bagian fotonya</span>
+    </div>
+
+    <!-- Kapsul Kontrol Utama iOS Liquid Glass -->
+    <div class="pointer-events-auto ios-glass-dark w-full max-w-[460px] p-1.5 rounded-[2rem] flex flex-col gap-1.5">
+
+      <div class="flex items-center justify-between gap-1">
+        <!-- Prev -->
+        <button onclick="prevImage()" class="ios-btn h-10 px-3 rounded-full bg-white/10 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer shrink-0" aria-label="Foto Sebelumnya">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
+          <span class="hidden sm:inline">Prev</span>
+        </button>
+
+        <!-- Tengah: Selector Mode (Elus & Cubit) + Dots Slide -->
+        <div class="flex flex-col items-center justify-center min-w-0 flex-1">
+          <div class="flex items-center bg-black/25 p-0.5 rounded-full border border-white/10 text-[10px] font-bold">
+            <button type="button" data-jelly="soft" onclick="setJellyMode('soft')" class="jelly-btn px-2 py-0.5 rounded-full bg-white/25 text-white shadow-xs transition-all cursor-pointer">
+              Lembut
+            </button>
+            <button type="button" data-jelly="bouncy" onclick="setJellyMode('bouncy')" class="jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer">
+              Sedang
+            </button>
+            <button type="button" data-jelly="mega" onclick="setJellyMode('mega')" class="jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer">
+              Kenyal
+            </button>
+            <button type="button" data-jelly="pinch" onclick="setJellyMode('pinch')" class="jelly-btn px-2 py-0.5 rounded-full text-pink-200/80 hover:text-white transition-all cursor-pointer">
+              Cubit
+            </button>
+          </div>
+
+          <!-- Dots Slide -->
+          <div id="miniDots" class="flex items-center gap-1 mt-1.5"></div>
+        </div>
+
+        <!-- Kanan: Dual Tangan + Atur Posisi Tangan 2 + Next -->
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="dualHandBtn" onclick="toggleDualHand()" title="Aktifkan Dual Sentuhan" class="ios-btn w-9 h-10 rounded-full bg-white/10 text-white/75 flex items-center justify-center cursor-pointer" aria-label="Dual Sentuhan">
+            <i class="fa-solid fa-hands text-xs"></i>
+          </button>
+
+          <button id="placeHandBtn" onclick="startPlacingSecondHand()" title="Letakkan Ulang Titik Kedua" class="hidden ios-btn w-9 h-10 rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/30 flex items-center justify-center cursor-pointer" aria-label="Pindah Posisi Titik Kedua">
+            <i class="fa-solid fa-crosshairs text-xs"></i>
+          </button>
+
+          <button onclick="nextImage()" class="ios-btn-accent h-10 px-3.5 rounded-full text-xs font-extrabold flex items-center gap-1 cursor-pointer" aria-label="Next Gambar">
+            <span>Next</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- iPhone Home Indicator Bar -->
+    <div class="w-32 h-1 rounded-full bg-white/45 mt-0.5 shadow-xs" aria-hidden="true"></div>
+  </footer>
+
+  <!-- =====================================================================
+       JAVASCRIPT: FISIKA JELLY + CUBIT + ROUNDED CANVAS + DUAL SENTUHAN
+       ===================================================================== -->
+  <script>
+    const PHOTO_LINKS = [
+      'https://lh3.googleusercontent.com/d/1Yxp77JFfFsqco-YbhuoRMrzLtYLLBGyd=s0',
+      'https://lh3.googleusercontent.com/d/1uzS7YLs1wDydFu4XeRw_pD8rmY8VTfBa=s0',
+      'https://lh3.googleusercontent.com/d/1uKUIo6wqmQIs7kHiVVVeSEcHME2zAJTZ=s0',
+      'https://lh3.googleusercontent.com/d/1RQTNfYb-OwjAaZw4_1mgtSk1q6rJ_ux8=s0',
+      'https://lh3.googleusercontent.com/d/1WEm__glU9uAnenuzRkVsV4SZ_hLb2XKy=s0',
+      'https://lh3.googleusercontent.com/d/1xWFJKAxOaQLI6Gn9YlNxt456ymyOgC2y=s0',
+      'https://lh3.googleusercontent.com/d/1wUHIQAgf_d7gMUc7A394g-fRjTqja6yP=s0',
+      'https://lh3.googleusercontent.com/d/16f1xBivX4sZD-8tuxnHwbNn41nWvinZh=s0',
+      'https://lh3.googleusercontent.com/d/1xkI-FK1aXYzsIt1ajo_rf9lRObnOXiDd=s0',
+      'https://lh3.googleusercontent.com/d/1iAOUaiPj143T_SHo3VF1OqeTwv5SQHhl=s0',
+      'https://lh3.googleusercontent.com/d/19OPEuHWGf_NSles5RXwbT5lQOQhBIPct=s0',
+      'https://lh3.googleusercontent.com/d/14SfGlxite26xJoCEUdlb9W7kj6zbOoqU=s0'
+    ];
+
+    function toSources(link) {
+      const match = link.match(/googleusercontent\.com\/d\/([\w-]+)/);
+      if (!match) return [link];
+      return [
+        `https://lh3.googleusercontent.com/d/${match[1]}=s2048`,
+        `https://drive.google.com/thumbnail?id=${match[1]}&sz=w2048`
+      ];
+    }
+
+    const PHOTO_SLIDES = PHOTO_LINKS.map((link, i) => ({ title: `Foto ${i + 1}`, src: toSources(link) }));
+
+    /* =====================================================================
+       STATE
+       ===================================================================== */
+    const MAX_IMAGE_SIDE = 2048;
+    const LOAD_TIMEOUT_MS = 15000;
+    const STEP_MS = 1000 / 60;
+    const MAX_PARTICLES = 40;
+    const MAX_CACHED_PHOTOS = 5;
+    const CORNER_RADIUS = 28;
+
+    const glCanvas = document.getElementById('squishCanvas');
+    const fxCanvas = document.getElementById('fxCanvas');
+    const fx = fxCanvas.getContext('2d');
+    const gameStage = document.getElementById('gameStage');
+    const canvasLoader = document.getElementById('canvasLoader');
+    const loadError = document.getElementById('loadError');
+
+    const JELLY_PRESETS = {
+      soft:   { stiffness: 0.045, damping: 0.70, radius: 0.20, force: 0.085, limit: 0.030, isPinch: false },
+      bouncy: { stiffness: 0.045, damping: 0.77, radius: 0.22, force: 0.095, limit: 0.040, isPinch: false },
+      mega:   { stiffness: 0.045, damping: 0.84, radius: 0.24, force: 0.100, limit: 0.055, isPinch: false },
+      pinch:  { stiffness: 0.055, damping: 0.76, radius: 0.23, force: 0.115, limit: 0.062, isPinch: true }
+    };
+
+    let currentModeName = 'soft';
+    let currentJelly = JELLY_PRESETS.soft;
+    let photoRect = { x: 0, y: 0, w: 1, h: 1 };
+    let currentSlideIdx = 0;
+    let activePhoto = null;
+    let viewW = 1, viewH = 1, dpr = 1;
+    let strokeCount = 0;
+    let particles = [];
+    let meshAwake = true;
+    let needsRender = true;
+
+    const COLS = 24, ROWS = 32, STRIDE = COLS + 1;
+    let homeX, homeY, posX, posY, velX, velY, uvs, indices;
+
+    /* =====================================================================
+       SUARA GESEKAN HALUS (ASMR SINTETIS) & MUSIK LATAR
+       ===================================================================== */
+    let sfxEnabled = true;
+    let audioCtx = null;
+    let rubGain = null, rubFilter = null;
+
+    function initAudio() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          audioCtx = new AudioContextClass();
+
+          const length = audioCtx.sampleRate * 2;
+          const buffer = audioCtx.createBuffer(1, length, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          let last = 0;
+          for (let i = 0; i < length; i++) {
+            last = last * 0.6 + (Math.random() * 2 - 1) * 0.4;
+            data[i] = last;
+          }
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+          noise.loop = true;
+          rubFilter = audioCtx.createBiquadFilter();
+          rubFilter.type = 'bandpass';
+          rubFilter.frequency.value = 1800;
+          rubFilter.Q.value = 0.7;
+          rubGain = audioCtx.createGain();
+          rubGain.gain.value = 0;
+          noise.connect(rubFilter);
+          rubFilter.connect(rubGain);
+          rubGain.connect(audioCtx.destination);
+          noise.start();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+      } catch (e) {}
+    }
+
+    function setRubSound(speed) {
+      if (!rubGain) return;
+      const amount = sfxEnabled ? Math.sqrt(Math.min(speed / 18, 1)) : 0;
+      const now = audioCtx.currentTime;
+      rubGain.gain.setTargetAtTime(amount * 0.22, now, amount ? 0.05 : 0.09);
+      rubFilter.frequency.setTargetAtTime(1300 + amount * 1800, now, 0.08);
+    }
+
+    function playSwitchSound() {
+      initAudio();
+      if (!sfxEnabled || !audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.1);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.04, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.17);
+    }
+
+    function toggleSfx() {
+      sfxEnabled = !sfxEnabled;
+      const icon = document.getElementById('sfxIcon');
+      const btn = document.getElementById('sfxBtn');
+      icon.className = sfxEnabled
+        ? 'fa-solid fa-volume-high text-[11px]'
+        : 'fa-solid fa-volume-xmark text-[11px] opacity-60';
+      btn.classList.toggle('bg-white/15', sfxEnabled);
+      if (sfxEnabled) playSwitchSound();
+      else setRubSound(0);
+    }
+
+    const bgAudio = document.getElementById('bgAudio');
+    function toggleBgm() {
+      const btn = document.getElementById('bgmBtn');
+      const setOn = (on) => {
+        btn.classList.toggle('bg-white/25', on);
+        btn.classList.toggle('text-white', on);
+        btn.classList.toggle('text-white/75', !on);
+      };
+      if (bgAudio.paused) {
+        bgAudio.volume = 0.45;
+        bgAudio.play().then(() => setOn(true)).catch(() => setOn(false));
+      } else {
+        bgAudio.pause();
+        setOn(false);
+      }
+    }
+
+    /* =====================================================================
+       RENDERER: WEBGL (DENGAN ROUNDED SHADER) + CADANGAN CANVAS 2D ROUNDED
+       ===================================================================== */
+    let gl = null, glState = null, uploadedPhoto = null;
+    const unsafeForGL = new WeakSet();
+
+    function initGL() {
+      gl = glCanvas.getContext('webgl', { alpha: true, antialias: true, powerPreference: 'high-performance' });
+      if (!gl) return;
+      const compile = (type, source) => {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, source);
+        gl.compileShader(s);
+        return s;
+      };
+      const program = gl.createProgram();
+      gl.attachShader(program, compile(gl.VERTEX_SHADER, `
+        attribute vec2 aPos;
+        attribute vec2 aUv;
+        uniform vec2 uView;
+        varying vec2 vUv;
+        void main() {
+          vUv = aUv;
+          vec2 p = aPos / uView * 2.0 - 1.0;
+          gl_Position = vec4(p.x, -p.y, 0.0, 1.0);
+        }`));
+      gl.attachShader(program, compile(gl.FRAGMENT_SHADER, `
+        precision mediump float;
+        uniform sampler2D uTex;
+        uniform vec2 uSize;
+        uniform float uRadius;
+        varying vec2 vUv;
+        void main() {
+          vec2 p = vUv * uSize;
+          vec2 halfSize = uSize * 0.5;
+          vec2 d = abs(p - halfSize) - (halfSize - vec2(uRadius));
+          float dist = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - uRadius;
+          float alpha = 1.0 - smoothstep(-1.2, 0.8, dist);
+          if (alpha <= 0.001) discard;
+          vec4 texColor = texture2D(uTex, vUv);
+          gl_FragColor = vec4(texColor.rgb, texColor.a * alpha);
+        }`));
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { gl = null; return; }
+      gl.useProgram(program);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      const texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+      glState = {
+        posBuf: gl.createBuffer(),
+        uvBuf: gl.createBuffer(),
+        idxBuf: gl.createBuffer(),
+        aPos: gl.getAttribLocation(program, 'aPos'),
+        aUv: gl.getAttribLocation(program, 'aUv'),
+        uView: gl.getUniformLocation(program, 'uView'),
+        uSize: gl.getUniformLocation(program, 'uSize'),
+        uRadius: gl.getUniformLocation(program, 'uRadius'),
+        vertices: null
+      };
+      uploadedPhoto = null;
+    }
+
+    function uploadMeshToGL() {
+      if (!gl) return;
+      glState.vertices = new Float32Array(posX.length * 2);
+      gl.bindBuffer(gl.ARRAY_BUFFER, glState.uvBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, uvs, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(glState.aUv);
+      gl.vertexAttribPointer(glState.aUv, 2, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, glState.posBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, glState.vertices.byteLength, gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(glState.aPos);
+      gl.vertexAttribPointer(glState.aPos, 2, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, glState.idxBuf);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+    }
+
+    function computePhotoRect() {
+      const aspect = activePhoto ? activePhoto.width / activePhoto.height : 3 / 4;
+      const short = viewH < 500;
+      const top = viewW >= viewH ? 14 : 66;
+      const bottom = short ? 84 : 102;
+      const areaH = Math.max(100, viewH - top - bottom);
+      const w = Math.min(viewW - 20, areaH * aspect);
+      const h = w / aspect;
+      return { x: (viewW - w) / 2, y: top + (areaH - h) / 2, w, h };
+    }
+
+    function drawWithGL(photo) {
+      if (!gl || gl.isContextLost() || unsafeForGL.has(photo)) return false;
+      if (uploadedPhoto !== photo) {
+        try {
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, photo);
+        } catch (e) {
+          unsafeForGL.add(photo);
+          return false;
+        }
+        uploadedPhoto = photo;
+      }
+      const v = glState.vertices;
+      for (let i = 0; i < posX.length; i++) {
+        v[i * 2] = posX[i];
+        v[i * 2 + 1] = posY[i];
+      }
+      gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+      gl.uniform2f(glState.uView, viewW, viewH);
+      gl.uniform2f(glState.uSize, photoRect.w, photoRect.h);
+      gl.uniform1f(glState.uRadius, Math.min(CORNER_RADIUS, photoRect.w * 0.12));
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.bindBuffer(gl.ARRAY_BUFFER, glState.posBuf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, v);
+      gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+      return true;
+    }
+
+    function pathRoundedRect(ctx, x, y, w, h, r) {
+      const rad = Math.min(r, w * 0.12, h * 0.12);
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, w, h, rad);
+      } else {
+        ctx.moveTo(x + rad, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rad);
+        ctx.arcTo(x + w, y + h, x, y + h, rad);
+        ctx.arcTo(x, y + h, x, y, rad);
+        ctx.arcTo(x, y, x + w, y, rad);
+        ctx.closePath();
+      }
+    }
+
+    function drawWith2D(photo) {
+      const r = photoRect;
+      fx.save();
+      pathRoundedRect(fx, r.x, r.y, r.w, r.h, CORNER_RADIUS);
+      fx.clip();
+      fx.drawImage(photo, r.x, r.y, r.w, r.h);
+
+      const moved = (i) => Math.abs(posX[i] - homeX[i]) > 0.2 || Math.abs(posY[i] - homeY[i]) > 0.2;
+      for (let t = 0; t < indices.length; t += 6) {
+        const a = indices[t], b = indices[t + 1], c = indices[t + 2], d = indices[t + 4];
+        if (!(moved(a) || moved(b) || moved(c) || moved(d))) continue;
+        drawTriangle(photo, indices[t], indices[t + 1], indices[t + 2]);
+        drawTriangle(photo, indices[t + 3], indices[t + 4], indices[t + 5]);
+      }
+      fx.restore();
+    }
+
+    function drawTriangle(img, i0, i1, i2) {
+      const u0 = uvs[i0 * 2] * img.width, v0 = uvs[i0 * 2 + 1] * img.height;
+      const u1 = uvs[i1 * 2] * img.width, v1 = uvs[i1 * 2 + 1] * img.height;
+      const u2 = uvs[i2 * 2] * img.width, v2 = uvs[i2 * 2 + 1] * img.height;
+      const x0 = posX[i0], y0 = posY[i0], x1 = posX[i1], y1 = posY[i1], x2 = posX[i2], y2 = posY[i2];
+
+      const den = (u1 - u0) * (v2 - v0) - (u2 - u0) * (v1 - v0);
+      if (Math.abs(den) < 1e-6) return;
+      const a = ((x1 - x0) * (v2 - v0) - (x2 - x0) * (v1 - v0)) / den;
+      const b = ((y1 - y0) * (v2 - v0) - (y2 - y0) * (v1 - v0)) / den;
+      const c = ((x2 - x0) * (u1 - u0) - (x1 - x0) * (u2 - u0)) / den;
+      const d = ((y2 - y0) * (u1 - u0) - (y1 - y0) * (u2 - u0)) / den;
+
+      const cx = (x0 + x1 + x2) / 3, cy = (y0 + y1 + y2) / 3;
+      fx.save();
+      fx.beginPath();
+      [[x0, y0], [x1, y1], [x2, y2]].forEach(([x, y], n) => {
+        const len = Math.hypot(x - cx, y - cy) || 1;
+        const k = 1 + 1.2 / len;
+        const px = cx + (x - cx) * k, py = cy + (y - cy) * k;
+        n ? fx.lineTo(px, py) : fx.moveTo(px, py);
+      });
+      fx.clip();
+      fx.transform(a, b, c, d, x0 - a * u0 - c * v0, y0 - b * u0 - d * v0);
+      const sx = Math.max(0, Math.min(u0, u1, u2) - 3), sy = Math.max(0, Math.min(v0, v1, v2) - 3);
+      const sw = Math.min(img.width, Math.max(u0, u1, u2) + 3) - sx;
+      const sh = Math.min(img.height, Math.max(v0, v1, v2) + 3) - sy;
+      fx.drawImage(img, sx, sy, sw, sh, sx, sy, sw, sh);
+      fx.restore();
+    }
+
+    function drawParticles() {
+      for (const pt of particles) {
+        fx.save();
+        fx.globalAlpha = Math.max(0, pt.life);
+        fx.translate(pt.x, pt.y);
+        fx.rotate(pt.rot);
+        fx.fillStyle = pt.color;
+        fx.beginPath();
+        if (pt.shape === 'heart') {
+          const s = pt.size * 0.55;
+          fx.moveTo(0, s);
+          fx.bezierCurveTo(-s * 2, -s * 0.6, -s, -s * 2.1, 0, -s * 0.8);
+          fx.bezierCurveTo(s, -s * 2.1, s * 2, -s * 0.6, 0, s);
+        } else if (pt.shape === 'star') {
+          for (let i = 0; i < 8; i++) {
+            const rad = pt.size * (i % 2 === 0 ? 0.85 : 0.35);
+            const a = (i * Math.PI) / 4;
+            i ? fx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad) : fx.moveTo(rad, 0);
+          }
+          fx.closePath();
+        } else {
+          fx.arc(0, 0, pt.size * 0.5, 0, Math.PI * 2);
+        }
+        fx.fill();
+        fx.restore();
+      }
+    }
+
+    function renderScene() {
+      fx.clearRect(0, 0, viewW, viewH);
+      let usedGL = false;
+      if (activePhoto) {
+        usedGL = drawWithGL(activePhoto);
+        if (!usedGL) drawWith2D(activePhoto);
+
+        fx.save();
+        pathRoundedRect(fx, photoRect.x, photoRect.y, photoRect.w, photoRect.h, CORNER_RADIUS);
+        fx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        fx.lineWidth = 1.5;
+        fx.stroke();
+        fx.restore();
+      }
+      glCanvas.style.visibility = usedGL ? 'visible' : 'hidden';
+      drawParticles();
+    }
+
+    /* =====================================================================
+       MESH FISIKA KELENTURAN & EFEK CUBIT (PINCH)
+       ===================================================================== */
+    function updateHandIcons() {
+      const isPinch = currentModeName === 'pinch';
+      document.getElementById('handOpenSvg').classList.toggle('hidden', isPinch);
+      document.getElementById('handPinchSvg').classList.toggle('hidden', !isPinch);
+      document.getElementById('secondHandOpenSvg').classList.toggle('hidden', isPinch);
+      document.getElementById('secondHandPinchSvg').classList.toggle('hidden', !isPinch);
+    }
+
+    function setJellyMode(mode) {
+      if (!JELLY_PRESETS[mode]) return;
+      currentModeName = mode;
+      currentJelly = JELLY_PRESETS[mode];
+      document.querySelectorAll('.jelly-btn').forEach(btn => {
+        const isActive = btn.getAttribute('data-jelly') === mode;
+        const isPinchBtn = btn.getAttribute('data-jelly') === 'pinch';
+        if (isActive) {
+          btn.className = isPinchBtn
+            ? 'jelly-btn px-2 py-0.5 rounded-full bg-pink-500/80 text-white shadow-xs transition-all cursor-pointer'
+            : 'jelly-btn px-2 py-0.5 rounded-full bg-white/25 text-white shadow-xs transition-all cursor-pointer';
+        } else {
+          btn.className = isPinchBtn
+            ? 'jelly-btn px-2 py-0.5 rounded-full text-pink-200/80 hover:text-white transition-all cursor-pointer'
+            : 'jelly-btn px-2 py-0.5 rounded-full text-white/65 hover:text-white transition-all cursor-pointer';
+        }
+      });
+      updateHandIcons();
+      playSwitchSound();
+    }
+
+    function initMesh() {
+      photoRect = computePhotoRect();
+      const n = STRIDE * (ROWS + 1);
+      [homeX, homeY, posX, posY, velX, velY] = Array.from({ length: 6 }, () => new Float32Array(n));
+      uvs = new Float32Array(n * 2);
+      indices = new Uint16Array(COLS * ROWS * 6);
+
+      let k = 0;
+      for (let r = 0; r <= ROWS; r++) {
+        for (let c = 0; c <= COLS; c++) {
+          const i = r * STRIDE + c;
+          uvs[i * 2] = c / COLS;
+          uvs[i * 2 + 1] = r / ROWS;
+          homeX[i] = posX[i] = photoRect.x + (c / COLS) * photoRect.w;
+          homeY[i] = posY[i] = photoRect.y + (r / ROWS) * photoRect.h;
+          if (r < ROWS && c < COLS) {
+            indices.set([i, i + 1, i + STRIDE, i + 1, i + STRIDE + 1, i + STRIDE], k);
+            k += 6;
+          }
+        }
+      }
+      uploadMeshToGL();
+      meshAwake = true;
+    }
+
+    function resizeCanvas() {
+      viewW = Math.max(1, window.innerWidth);
+      viewH = Math.max(1, window.innerHeight);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      for (const cv of [glCanvas, fxCanvas]) {
+        cv.width = Math.round(viewW * dpr);
+        cv.height = Math.round(viewH * dpr);
+      }
+      fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      initMesh();
+      needsRender = true;
+    }
+
+    function applyStroke(px, py, dx, dy, strength = 1) {
+      const radius = photoRect.w * currentJelly.radius;
+      const gain = currentJelly.force * strength;
+      for (let i = 0; i < posX.length; i++) {
+        const distX = posX[i] - px;
+        const distY = posY[i] - py;
+        const q = (distX * distX + distY * distY) / (radius * radius);
+        if (q >= 1) continue;
+        const falloff = (1 - q) * (1 - q);
+        velX[i] += dx * gain * falloff;
+        velY[i] += dy * gain * falloff;
+      }
+      meshAwake = true;
+    }
+
+    function applyPinch(px, py, strength = 1) {
+      const radius = photoRect.w * currentJelly.radius;
+      for (let i = 0; i < posX.length; i++) {
+        const distX = posX[i] - px;
+        const distY = posY[i] - py;
+        const q = (distX * distX + distY * distY) / (radius * radius);
+        if (q >= 1 || q < 0.002) continue;
+        const pull = strength * (1 - q) * (1 - q) * 0.24;
+        velX[i] -= distX * pull * 1.25;
+        velY[i] -= distY * pull * 0.85;
+      }
+      meshAwake = true;
+    }
+
+    function applyPress(px, py, amount) {
+      const radius = photoRect.w * currentJelly.radius;
+      for (let i = 0; i < posX.length; i++) {
+        const distX = posX[i] - px;
+        const distY = posY[i] - py;
+        const q = (distX * distX + distY * distY) / (radius * radius);
+        if (q >= 1) continue;
+        const pull = amount * (1 - q) * (1 - q) / radius;
+        velX[i] -= distX * pull;
+        velY[i] -= distY * pull;
+      }
+      meshAwake = true;
+    }
+
+    function stepMesh() {
+      const k = currentJelly.stiffness;
+      const damp = currentJelly.damping;
+      const link = k * 0.45;
+      const limit = photoRect.w * currentJelly.limit;
+      let energy = 0;
+
+      for (let r = 0; r <= ROWS; r++) {
+        for (let c = 0; c <= COLS; c++) {
+          const i = r * STRIDE + c;
+          const ox = posX[i] - homeX[i];
+          const oy = posY[i] - homeY[i];
+          let ax = -ox * k;
+          let ay = -oy * k;
+          const pull = (j) => {
+            ax += (posX[j] - homeX[j] - ox) * link;
+            ay += (posY[j] - homeY[j] - oy) * link;
+          };
+          if (r > 0) pull(i - STRIDE);
+          if (r < ROWS) pull(i + STRIDE);
+          if (c > 0) pull(i - 1);
+          if (c < COLS) pull(i + 1);
+
+          velX[i] = (velX[i] + ax) * damp;
+          velY[i] = (velY[i] + ay) * damp;
+          if (c === 0 || c === COLS) velX[i] = 0;
+          if (r === 0 || r === ROWS) velY[i] = 0;
+          posX[i] = homeX[i] + Math.max(-limit, Math.min(limit, ox + velX[i]));
+          posY[i] = homeY[i] + Math.max(-limit, Math.min(limit, oy + velY[i]));
+
+          energy = Math.max(energy, Math.abs(velX[i]), Math.abs(velY[i]), Math.abs(ox), Math.abs(oy));
+        }
+      }
+
+      if (energy < 0.03) {
+        posX.set(homeX);
+        posY.set(homeY);
+        velX.fill(0);
+        velY.fill(0);
+        meshAwake = false;
+      }
+    }
+
+    function spawnParticles(x, y, count = 1) {
+      const shapes = currentJelly.isPinch ? ['heart', 'star', 'heart'] : ['heart', 'heart', 'star', 'bubble'];
+      const colors = currentJelly.isPinch ? ['#f472b6', '#fbcfe8', '#ffffff'] : ['#ffffff', '#fbcfe8', '#f9a8d4', '#fde68a'];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x + (Math.random() - 0.5) * 44,
+          y: y - 14 + (Math.random() - 0.5) * 20,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: -0.6 - Math.random() * 0.7,
+          size: 6 + Math.random() * 5,
+          life: 1,
+          decay: 0.012 + Math.random() * 0.008,
+          shape: shapes[Math.floor(Math.random() * shapes.length)],
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: (Math.random() - 0.5) * 0.4
+        });
+      }
+      if (particles.length > MAX_PARTICLES) particles.splice(0, particles.length - MAX_PARTICLES);
+    }
+
+    function stepParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx + Math.sin(pt.life * 9) * 0.25;
+        pt.y += pt.vy;
+        pt.life -= pt.decay;
+        if (pt.life <= 0) particles.splice(i, 1);
+      }
+    }
+
+    /* =====================================================================
+       KURSOR TANGAN UTAMA & DUAL SENTUHAN (OTOMATIS SEMBUNYI DI HP)
+       ===================================================================== */
+    const customHand = document.getElementById('customHandCursor');
+    const handInner = document.getElementById('handInner');
+    const handShadow = document.getElementById('handShadow');
+
+    const secondHand = document.getElementById('secondHandCursor');
+    const secondHandInner = document.getElementById('secondHandInner');
+    const secondHandShadow = document.getElementById('secondHandShadow');
+    const secondPlacementRing = document.getElementById('secondPlacementRing');
+
+    const pointers = new Map();
+
+    // Deteksi perangkat layar sentuh / HP agar kursor tangan disembunyikan
+    const isTouchDevice = () =>
+      window.matchMedia('(hover: none) and (pointer: coarse)').matches ||
+      navigator.maxTouchPoints > 0;
+
+    function isTouchInput(e) {
+      return (e && e.pointerType === 'touch') || isTouchDevice();
+    }
+
+    let dualHandEnabled = false;
+    let isPlacingSecondHand = false;
+    let secondHandPos = { x: 0, y: 0, placed: false };
+
+    function showHint(text) {
+      const hint = document.getElementById('floatingHint');
+      hint.querySelector('span').textContent = text;
+      hint.style.opacity = '1';
+    }
+
+    function updateSecondHandTransform() {
+      secondHand.style.transform = `translate3d(${secondHandPos.x}px, ${secondHandPos.y}px, 0)`;
+    }
+
+    function toggleDualHand() {
+      dualHandEnabled = !dualHandEnabled;
+      const btn = document.getElementById('dualHandBtn');
+      const placeBtn = document.getElementById('placeHandBtn');
+
+      if (dualHandEnabled) {
+        btn.classList.add('bg-sky-500/80', 'text-white');
+        btn.classList.remove('bg-white/10', 'text-white/75');
+        placeBtn.classList.remove('hidden');
+        startPlacingSecondHand();
+      } else {
+        isPlacingSecondHand = false;
+        secondHandPos.placed = false;
+        btn.classList.remove('bg-sky-500/80', 'text-white');
+        btn.classList.add('bg-white/10', 'text-white/75');
+        placeBtn.classList.add('hidden');
+        secondHand.style.opacity = '0';
+        secondPlacementRing.classList.add('hidden');
+        showHint('Elus atau cubit pelan-pelan bagian fotonya');
+      }
+      playSwitchSound();
+    }
+
+    function startPlacingSecondHand() {
+      if (!dualHandEnabled) return;
+      isPlacingSecondHand = true;
+      secondHandPos.placed = false;
+      secondPlacementRing.classList.remove('hidden');
+      if (!isTouchDevice()) secondHand.style.opacity = '1';
+      showHint('Tap atau klik di foto untuk meletakkan titik kedua');
+    }
+
+    function moveHand(e) {
+      if (isTouchInput(e)) {
+        customHand.style.opacity = '0';
+        secondHand.style.opacity = '0';
+        return;
+      }
+      customHand.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      if (isPlacingSecondHand) {
+        secondHandPos.x = e.clientX;
+        secondHandPos.y = e.clientY;
+        updateSecondHandTransform();
+      }
+    }
+
+    let handDown = false;
+
+    function setHandVisualState(isPetting) {
+      handDown = isPetting;
+      const scale = currentJelly.isPinch ? (isPetting ? 0.84 : 1) : (isPetting ? 0.9 : 1);
+      const rot = isPetting ? -8 : 0;
+
+      handInner.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+      handShadow.style.transform = isPetting ? 'translate(3px, 11px) scale(0.78)' : 'translate(10px, 24px) scale(1)';
+      handShadow.style.opacity = isPetting ? '0.8' : '0.55';
+
+      if (dualHandEnabled && secondHandPos.placed) {
+        secondHandInner.style.transform = `scaleX(-1) scale(${scale}) rotate(${rot}deg)`;
+        secondHandShadow.style.transform = isPetting ? 'translate(-3px, 11px) scale(0.78)' : 'translate(-10px, 24px) scale(1)';
+        secondHandShadow.style.opacity = isPetting ? '0.8' : '0.55';
+      }
+    }
+
+    function countStroke() {
+      strokeCount++;
+      document.getElementById('strokeCounter').textContent = strokeCount;
+      if (!isPlacingSecondHand) {
+        document.getElementById('floatingHint').style.opacity = '0';
+      }
+    }
+
+    let travelled = 0, rubSpeed = 0;
+
+    function processPointers() {
+      const clamp = (v) => Math.max(-30, Math.min(30, v));
+      let speedNow = 0;
+
+      for (const p of pointers.values()) {
+        const dx = clamp(p.x - p.lastX);
+        const dy = clamp(p.y - p.lastY);
+        p.lastX = p.x;
+        p.lastY = p.y;
+
+        if (isPlacingSecondHand) continue;
+
+        if (p.isDown) {
+          if (currentJelly.isPinch) {
+            applyPinch(p.x, p.y, 1);
+            if (dualHandEnabled && secondHandPos.placed) {
+              applyPinch(secondHandPos.x, secondHandPos.y, 1);
+            }
+          }
+
+          if (dx || dy) {
+            const speed = Math.hypot(dx, dy);
+            applyStroke(p.x, p.y, dx, dy, currentJelly.isPinch ? 0.75 : 1);
+
+            if (dualHandEnabled && secondHandPos.placed) {
+              secondHandPos.x = Math.max(photoRect.x, Math.min(photoRect.x + photoRect.w, secondHandPos.x + dx));
+              secondHandPos.y = Math.max(photoRect.y, Math.min(photoRect.y + photoRect.h, secondHandPos.y + dy));
+              updateSecondHandTransform();
+              applyStroke(secondHandPos.x, secondHandPos.y, dx, dy, currentJelly.isPinch ? 0.75 : 1);
+            }
+
+            speedNow = Math.max(speedNow, speed);
+            travelled += speed;
+            if (travelled > 70) {
+              travelled = 0;
+              spawnParticles(p.x, p.y);
+              if (dualHandEnabled && secondHandPos.placed) {
+                spawnParticles(secondHandPos.x, secondHandPos.y);
+              }
+            }
+
+            const scale = currentJelly.isPinch ? 0.84 : 0.9;
+            const rot = -8 + clamp(dx) * 0.5;
+            handInner.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+            if (dualHandEnabled && secondHandPos.placed) {
+              secondHandInner.style.transform = `scaleX(-1) scale(${scale}) rotate(${rot}deg)`;
+            }
+          }
+        } else if (dx || dy && !isTouchDevice()) {
+          applyStroke(p.x, p.y, dx, dy, 0.35);
+        }
+      }
+
+      rubSpeed += (speedNow - rubSpeed) * 0.25;
+      if (rubSpeed < 0.05) rubSpeed = 0;
+      setRubSound(rubSpeed);
+    }
+
+    function trackPointer(e) {
+      let p = pointers.get(e.pointerId);
+      if (!p) {
+        p = { x: e.clientX, y: e.clientY, lastX: e.clientX, lastY: e.clientY, isDown: false };
+        pointers.set(e.pointerId, p);
+      }
+      p.x = e.clientX;
+      p.y = e.clientY;
+      return p;
+    }
+
+    const anyDown = () => [...pointers.values()].some(p => p.isDown);
+
+    gameStage.addEventListener('pointerenter', (e) => {
+      trackPointer(e);
+      if (isTouchInput(e)) return;
+      moveHand(e);
+      customHand.style.opacity = '1';
+    });
+
+    gameStage.addEventListener('pointerleave', (e) => {
+      pointers.delete(e.pointerId);
+      if (!pointers.size) {
+        customHand.style.opacity = '0';
+        setHandVisualState(false);
+      }
+    });
+
+    gameStage.addEventListener('pointerdown', (e) => {
+      if (e.button > 0) return;
+      e.preventDefault();
+      try { gameStage.setPointerCapture(e.pointerId); } catch (err) {}
+      const p = trackPointer(e);
+      p.lastX = p.x;
+      p.lastY = p.y;
+      const touchMode = isTouchInput(e);
+
+      if (!touchMode) {
+        moveHand(e);
+        customHand.style.opacity = '1';
+      } else {
+        customHand.style.opacity = '0';
+      }
+      initAudio();
+
+      if (isPlacingSecondHand) {
+        secondHandPos = { x: p.x, y: p.y, placed: true };
+        isPlacingSecondHand = false;
+        secondPlacementRing.classList.add('hidden');
+        updateSecondHandTransform();
+        if (!touchMode) secondHand.style.opacity = '1';
+        playSwitchSound();
+        showHint('Titik kedua terpasang! Sekarang geser bersamaan');
+        setTimeout(() => {
+          if (!isPlacingSecondHand) document.getElementById('floatingHint').style.opacity = '0';
+        }, 1800);
+        return;
+      }
+
+      p.isDown = true;
+      setHandVisualState(true);
+
+      if (currentJelly.isPinch) {
+        applyPinch(p.x, p.y, 1.8);
+        if (dualHandEnabled && secondHandPos.placed) {
+          applyPinch(secondHandPos.x, secondHandPos.y, 1.8);
+        }
+      } else {
+        applyPress(p.x, p.y, 1.6);
+        if (dualHandEnabled && secondHandPos.placed) {
+          applyPress(secondHandPos.x, secondHandPos.y, 1.6);
+        }
+      }
+
+      spawnParticles(p.x, p.y, 2);
+      if (dualHandEnabled && secondHandPos.placed) {
+        spawnParticles(secondHandPos.x, secondHandPos.y, 2);
+      }
+      countStroke();
+    });
+
+    gameStage.addEventListener('pointermove', (e) => {
+      trackPointer(e);
+      if (isTouchInput(e)) return;
+      moveHand(e);
+      customHand.style.opacity = '1';
+    });
+
+    function releasePointer(e) {
+      const p = pointers.get(e.pointerId);
+      if (p) p.isDown = false;
+      initAudio();
+      if (e.pointerType !== 'mouse') pointers.delete(e.pointerId);
+      if (!anyDown()) {
+        setHandVisualState(false);
+        if (isTouchInput(e)) customHand.style.opacity = '0';
+      }
+    }
+    gameStage.addEventListener('pointerup', releasePointer);
+    gameStage.addEventListener('pointercancel', releasePointer);
+    gameStage.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    /* =====================================================================
+       PEMUAT FOTO & TRANSISI FADE SAAT NEXT/PREV
+       ===================================================================== */
+    const photoRequests = new Map();
+    let loadTicket = 0;
+
+    function loadOne(url, useCors) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const timer = setTimeout(() => { img.src = ''; reject(new Error('timeout')); }, LOAD_TIMEOUT_MS);
+        if (useCors) img.crossOrigin = 'anonymous';
+        img.referrerPolicy = 'no-referrer';
+        img.onload = () => {
+          clearTimeout(timer);
+          img.naturalWidth > 0 ? resolve(img) : reject(new Error('empty'));
+        };
+        img.onerror = () => { clearTimeout(timer); reject(new Error('error')); };
+        img.src = url;
+      });
+    }
+
+    function toPhotoCanvas(img) {
+      const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      cv.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      return cv;
+    }
+
+    async function fetchPhoto(slide) {
+      const urls = Array.isArray(slide.src) ? slide.src : [slide.src];
+      for (const useCors of [true, false]) {
+        for (const url of urls) {
+          try {
+            const photo = toPhotoCanvas(await loadOne(url, useCors));
+            if (!useCors) unsafeForGL.add(photo);
+            return photo;
+          } catch (e) {
+            console.warn(`Gagal memuat ${slide.title} (${useCors ? 'CORS' : 'biasa'}): ${url}`);
+          }
+        }
+      }
+      throw new Error('Semua sumber gagal');
+    }
+
+    function getPhoto(idx) {
+      if (!photoRequests.has(idx)) {
+        const request = fetchPhoto(PHOTO_SLIDES[idx]);
+        photoRequests.set(idx, request);
+        request.catch(() => photoRequests.delete(idx));
+        while (photoRequests.size > MAX_CACHED_PHOTOS) {
+          photoRequests.delete(photoRequests.keys().next().value);
+        }
+      }
+      const found = photoRequests.get(idx);
+      photoRequests.delete(idx);
+      photoRequests.set(idx, found);
+      return found;
+    }
+
+    function makePlaceholder(title) {
+      const cv = document.createElement('canvas');
+      cv.width = 900;
+      cv.height = 1200;
+      const c = cv.getContext('2d');
+      const g = c.createLinearGradient(0, 0, 900, 1200);
+      g.addColorStop(0, '#0b1429');
+      g.addColorStop(1, '#1d4ed8');
+      c.fillStyle = g;
+      c.fillRect(0, 0, 900, 1200);
+      c.fillStyle = '#bfdbfe';
+      c.font = '700 80px sans-serif';
+      c.textAlign = 'center';
+      c.fillText(title, 450, 620);
+      return cv;
+    }
+
+    function setCanvasOpacity(val) {
+      glCanvas.style.opacity = val;
+      fxCanvas.style.opacity = val;
+    }
+
+    function showPhoto(photo) {
+      activePhoto = photo;
+      initMesh();
+      const bg = document.getElementById('bgCanvas');
+      bg.getContext('2d').drawImage(photo, 0, 0, bg.width, bg.height);
+      needsRender = true;
+      renderScene();
+      canvasLoader.classList.add('is-hidden');
+      requestAnimationFrame(() => setCanvasOpacity('1'));
+    }
+
+    function renderMiniDots() {
+      const container = document.getElementById('miniDots');
+      container.innerHTML = '';
+      PHOTO_SLIDES.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.onclick = () => { playSwitchSound(); loadSlideImage(idx, true); };
+        dot.setAttribute('aria-label', `Foto ${idx + 1}`);
+        dot.className = idx === currentSlideIdx
+          ? 'h-1.5 w-4 rounded-full bg-white transition-all cursor-pointer shadow-xs'
+          : 'h-1.5 w-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all cursor-pointer';
+        container.appendChild(dot);
+      });
+    }
+
+    async function loadSlideImage(index, withFade = true) {
+      const ticket = ++loadTicket;
+      currentSlideIdx = (index + PHOTO_SLIDES.length) % PHOTO_SLIDES.length;
+      const slide = PHOTO_SLIDES[currentSlideIdx];
+      document.getElementById('slideBadge').textContent = `${currentSlideIdx + 1} / ${PHOTO_SLIDES.length}`;
+      renderMiniDots();
+      loadError.hidden = true;
+
+      const fadeOutPromise = (withFade && activePhoto)
+        ? new Promise(resolve => {
+            setCanvasOpacity('0');
+            setTimeout(resolve, 260);
+          })
+        : Promise.resolve();
+
+      const loaderTimer = setTimeout(() => {
+        if (ticket === loadTicket) canvasLoader.classList.remove('is-hidden');
+      }, 280);
+
+      try {
+        const [photo] = await Promise.all([getPhoto(currentSlideIdx), fadeOutPromise]);
+        clearTimeout(loaderTimer);
+        if (ticket !== loadTicket) return;
+        showPhoto(photo);
+        getPhoto((currentSlideIdx + 1) % PHOTO_SLIDES.length).catch(() => {});
+      } catch (err) {
+        clearTimeout(loaderTimer);
+        if (ticket !== loadTicket) return;
+        await fadeOutPromise;
+        showPhoto(makePlaceholder(slide.title));
+        loadError.hidden = false;
+      }
+    }
+
+    function retryImage() { loadSlideImage(currentSlideIdx, true); }
+    function nextImage() { playSwitchSound(); loadSlideImage(currentSlideIdx + 1, true); }
+    function prevImage() { playSwitchSound(); loadSlideImage(currentSlideIdx - 1, true); }
+
+    /* =====================================================================
+       LOOP ANIMASI & START
+       ===================================================================== */
+    let lastTime = 0, accumulator = 0;
+
+    function animateLoop(time) {
+      accumulator += Math.min(time - (lastTime || time), STEP_MS * 4);
+      lastTime = time;
+      while (accumulator >= STEP_MS) {
+        accumulator -= STEP_MS;
+        processPointers();
+        if (meshAwake) { stepMesh(); needsRender = true; }
+        if (particles.length) { stepParticles(); needsRender = true; }
+      }
+      if (needsRender) { needsRender = false; renderScene(); }
+      requestAnimationFrame(animateLoop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextImage();
+      else if (e.key === 'ArrowLeft') prevImage();
+    });
+
+    document.addEventListener('visibilitychange', () => { if (document.hidden) setRubSound(0); });
+
+    glCanvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); needsRender = true; });
+    glCanvas.addEventListener('webglcontextrestored', () => { initGL(); uploadMeshToGL(); needsRender = true; });
+
+    let resizeQueued = false;
+    window.addEventListener('resize', () => {
+      if (resizeQueued) return;
+      resizeQueued = true;
+      requestAnimationFrame(() => { resizeQueued = false; resizeCanvas(); });
+    });
+
+    initGL();
+    resizeCanvas();
+    loadSlideImage(0, false);
+    requestAnimationFrame(animateLoop);
+  </script>
+</body>
+</html>
